@@ -14,9 +14,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     mainwindow.cpp \
-    view.cpp
+    view.cpp \
+    random.cpp \
+    math/CS123Matrix.cpp
 
 HEADERS += mainwindow.h \
-    view.h
+    view.h \
+    random.h \
+    lib/CS123Common.h \
+    math/CS123Algebra.h
+
 
 FORMS += mainwindow.ui
