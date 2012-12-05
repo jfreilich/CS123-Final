@@ -50,7 +50,7 @@ GLWidget::~GLWidget()
         delete fbo;
     glDeleteLists(m_skybox, 1);
     const_cast<QGLContext *>(context())->deleteTexture(m_cubeMap);
-    glmDelete(m_dragon.model);
+    //glmDelete(m_dragon.model);
 }
 
 /**
@@ -115,12 +115,12 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("/course/cs123/bin/textures/astra/posx.jpg"));
-    fileList.append(new QFile("/course/cs123/bin/textures/astra/negx.jpg"));
-    fileList.append(new QFile("/course/cs123/bin/textures/astra/posy.jpg"));
-    fileList.append(new QFile("/course/cs123/bin/textures/astra/negy.jpg"));
-    fileList.append(new QFile("/course/cs123/bin/textures/astra/posz.jpg"));
-    fileList.append(new QFile("/course/cs123/bin/textures/astra/negz.jpg"));
+    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -250,7 +250,7 @@ void GLWidget::paintGL()
 
 
     // TODO: Uncomment this section in step 2 of the lab
-    float scales[] = {4.f,8.f};
+    /*float scales[] = {4.f,8.f};
     for (int i = 0; i < 2; ++i)
     {
         // Render the blurred brightpass filter result to fbo 1
@@ -267,7 +267,7 @@ void GLWidget::paintGL()
         renderTexturedQuad(width * scales[i], height * scales[i]);
         glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, 0);
-    }
+    }*/
 
     paintText();
 }
@@ -295,7 +295,7 @@ void GLWidget::renderScene()
     m_shaderPrograms["refract"]->setUniformValue("CubeMap", GL_TEXTURE0);
     glPushMatrix();
     glTranslatef(-1.25f, 0.f, 0.f);
-    glCallList(m_dragon.idx);
+    //glCallList(m_dragon.idx);
     glPopMatrix();
     m_shaderPrograms["refract"]->release();
 
@@ -304,7 +304,7 @@ void GLWidget::renderScene()
     m_shaderPrograms["reflect"]->setUniformValue("CubeMap", GL_TEXTURE0);
     glPushMatrix();
     glTranslatef(1.25f,0.f,0.f);
-    glCallList(m_dragon.idx);
+    //glCallList(m_dragon.idx);
     glPopMatrix();
     m_shaderPrograms["reflect"]->release();
     // Disable culling, depth testing and cube maps

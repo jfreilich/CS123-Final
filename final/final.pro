@@ -14,9 +14,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     mainwindow.cpp \
-    view.cpp
+    view.cpp \
+    support/resourceloader.cpp \
+    support/targa.cpp \
+    support/glm.cpp \
+    support/camera.cpp
 
 HEADERS += mainwindow.h \
-    view.h
+    view.h \
+    support/resourceloader.h \
+    support/vector.h \
+    support/targa.h \
+    support/glm.h \
+    support/camera.h
 
 FORMS += mainwindow.ui
