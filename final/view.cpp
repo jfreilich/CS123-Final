@@ -44,7 +44,14 @@ void View::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // TODO: Implement the demo rendering here
+    glPushMatrix();
+
+    glBegin();
+
+    glEnd();
+
+    glPopMatrix();
+
 }
 
 void View::resizeGL(int w, int h)
