@@ -19,6 +19,7 @@ SOURCES += main.cpp \
     support/targa.cpp \
     support/glm.cpp \
     support/camera.cpp
+    random.cpp
 
 HEADERS += mainwindow.h \
     view.h \
@@ -26,6 +27,8 @@ HEADERS += mainwindow.h \
     support/vector.h \
     support/targa.h \
     support/glm.h \
-    support/camera.h
+    support/camera.h \
+    math/CS123Matrix.cpp \
+    lib/CS123Common.h
 
 FORMS += mainwindow.ui
