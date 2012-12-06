@@ -18,7 +18,9 @@ HEADERS += lab/glwidget.h \
     math/vector.h \
     support/resourceloader.h \
     support/mainwindow.h \
-    support/camera.h
+    support/camera.h \
+    shape/Shape.h \
+    shape/sphere
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -27,7 +29,11 @@ SOURCES += \
     support/resourceloader.cpp \
     support/mainwindow.cpp \
     support/main.cpp \
-    support/camera.cpp
+    support/camera.cpp \
+    shape/Shape.cpp \
+    shape/sphere.cpp
+
+
 
 FORMS += mainwindow.ui \
     support/mainwindow.ui

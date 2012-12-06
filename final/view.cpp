@@ -13,7 +13,7 @@ View::View(QWidget *parent) : QGLWidget(parent)
     setMouseTracking(true);
 
     // Hide the cursor since this is a fullscreen app
-    setCursor(Qt::BlankCursor);
+    //setCursor(Qt::BlankCursor);
 
     // View needs keyboard focus
     setFocusPolicy(Qt::StrongFocus);
@@ -103,12 +103,12 @@ void View::initializeResources()
 void View::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -170,12 +170,20 @@ void View::paintGL()
 
 
 
-    glCallList(m_skybox);
+cout << m_skybox << endl;
 
     //glPopMatrix();
 
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
     glDisable(GL_TEXTURE_CUBE_MAP);
+
+    glColor3f(1,0,0);
+    glCallList(m_skybox);
+    glBegin(GL_TRIANGLES);
+        glVertex3f(-1,0,0);
+        glVertex3f(0,1,0);
+        glVertex3f(1,0,0);
+    glEnd();
 
     // TODO: Implement the demo rendering here
 
@@ -221,7 +229,7 @@ void View::mouseMoveEvent(QMouseEvent *event)
     int deltaX = event->x() - width() / 2;
     int deltaY = event->y() - height() / 2;
     if (!deltaX && !deltaY) return;
-    QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
+   // QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
 
     // TODO: Handle mouse movements here
 }

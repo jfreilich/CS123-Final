@@ -1,18 +1,11 @@
 #ifndef RANDOM_H
 #define RANDOM_H
-
+#include "math/CS123Algebra.h"
 #include<math.h>
 #include<stdlib.h>
 typedef struct rand_param{
-    double x;
-    double y;
-    double z;
-    double xV;
-    double yV;
-    double zV;
-    double p1;
-    double p2;
-    double p3;
+   Vector4 v;
+   Vector4 p;
 }rand_param_t;
 
 class random

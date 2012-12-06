@@ -115,12 +115,12 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfedor/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -296,6 +296,7 @@ void GLWidget::renderScene()
     glPushMatrix();
     glTranslatef(-1.25f, 0.f, 0.f);
     //glCallList(m_dragon.idx);
+
     glPopMatrix();
     m_shaderPrograms["refract"]->release();
 

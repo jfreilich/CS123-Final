@@ -5,7 +5,7 @@
 
 QT += core gui opengl
 
-TARGET = final
+TARGET = finalProj
 TEMPLATE = app
 
 # If you add your own folders, add them to INCLUDEPATH and DEPENDPATH, e.g.
@@ -18,8 +18,11 @@ SOURCES += main.cpp \
     support/resourceloader.cpp \
     support/targa.cpp \
     support/glm.cpp \
-    support/camera.cpp
-    random.cpp
+    support/camera.cpp \
+    random.cpp \
+    shape/sphere.cpp \
+    shape/Shape.cpp
+
 
 HEADERS += mainwindow.h \
     view.h \
@@ -29,6 +32,9 @@ HEADERS += mainwindow.h \
     support/glm.h \
     support/camera.h \
     math/CS123Matrix.cpp \
-    lib/CS123Common.h
+    random.h \
+    lib/CS123Common.h \
+    shape/Shape.h \
+    shape/sphere.h
 
 FORMS += mainwindow.ui
