@@ -90,8 +90,16 @@ void GLWidget::initializeResources()
     // by the video card.  But that's a pain to do so we're not going to.
     cout << "--- Loading Resources ---" << endl;
 
+
+
+
     //m_dragon = ResourceLoader::loadObjModel("/course/cs123/bin/models/xyzrgb_dragon.obj");
-    //cout << "Loaded dragon..." << endl;
+
+
+    //load textures here
+    m_pms = PlanetMaster();
+    m_pms.addPlanet(0, 1, 1);
+    cout << "Loaded planet master..." << endl;
 
     m_skybox = ResourceLoader::loadSkybox();
     cout << "Loaded skybox..." << endl;
@@ -294,8 +302,55 @@ void GLWidget::renderScene()
     m_shaderPrograms["refract"]->bind();
     m_shaderPrograms["refract"]->setUniformValue("CubeMap", GL_TEXTURE0);
     glPushMatrix();
-    glTranslatef(-1.25f, 0.f, 0.f);
+   // glTranslatef(-1.25f, 0.f, 0.f);
     //glCallList(m_dragon.idx);
+
+    QList<Planet*> planets = m_pms.getPlanets();
+
+    int size=planets.size();
+    Triangle** tris;
+    Triangle* t;
+    int numTriangles;
+
+    Sphere gen = Sphere();
+    int numtris = 0;
+
+
+    for (int j=0;j<size;j++) {
+        tris = planets.at(j)->getMid(numTriangles);
+//        tris = triangles[i];
+
+        for (int i=0;i<numTriangles;i++) {
+            t = tris[i];
+            glBegin(GL_TRIANGLES);
+
+            glNormal3f(t->vector[0]->x,
+                       t->vector[0]->y,
+                       t->vector[0]->z);
+
+            glVertex3f(t->points[0]->x,
+                       t->points[0]->y,
+                       t->points[0]->z);
+
+            glNormal3f(t->vector[1]->x,
+                       t->vector[1]->y,
+                       t->vector[1]->z);
+
+            glVertex3f(t->points[1]->x,
+                       t->points[1]->y,
+                       t->points[1]->z);
+
+            glNormal3f(t->vector[2]->x,
+                       t->vector[2]->y,
+                       t->vector[2]->z);
+
+            glVertex3f(t->points[2]->x,
+                       t->points[2]->y,
+                       t->points[2]->z);
+            glEnd();
+        }
+
+    }
 
     glPopMatrix();
     m_shaderPrograms["refract"]->release();

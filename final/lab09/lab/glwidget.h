@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "vector.h"
 #include "resourceloader.h"
+#include "shape/planetmaster.h"
 
 class QGLShaderProgram;
 class QGLFramebufferObject;
@@ -59,11 +60,10 @@ private:
     // Resources
     QHash<QString, QGLShaderProgram *> m_shaderPrograms; // hash map of all shader programs
     QHash<QString, QGLFramebufferObject *> m_framebufferObjects; // hash map of all framebuffer objects
-    Model m_dragon; // dragon model
+    PlanetMaster m_pms; // master of planets
     GLuint m_skybox; // skybox call list ID
     GLuint m_cubeMap; // cubeMap texture ID
-    QFont m_font; // font for rendering text
-
+    QFont m_font;
 };
 
 #endif // GLWIDGET_H

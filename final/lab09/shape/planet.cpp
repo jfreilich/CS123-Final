@@ -1,30 +1,32 @@
 #include "planet.h"
 
-Planet::Planet(triangle_t* low,int lowsize, triangle_t* mid,int midsize, triangle_t* high, int highsize)
+Planet::Planet(Triangle** mid, int numMid)
 {
-    std::copy(low, low[lowsize], m_low);
+    m_mid = mid;
+    m_numMid = numMid;
+
+
+    /*std::copy(low, low[lowsize], m_low);
     std::copy(mid, mid[midsize], m_mid);
-    std::copy(high, high[highsize], m_high);
+    std::copy(high, high[highsize], m_high);*/
 
 }
 
+Triangle** Planet::getMid(int &num) {
+
+    num = m_numMid;
+    return m_mid;
+
+}
 
 Planet::~Planet(){
-    if (m_low){
-        delete[] m_low;
-    }
-    if (m_mid){
-        delete[] m_mid;
-    }
-    if (m_high){
-        delete[] m_high;
-    }
-}
-
-void Planet::displace_surface(){
-
-}
-
-triangle_t* Planet ::get_tessellation(int tessellation){
-
+//    if (m_low){
+//        delete[] m_low;
+//    }
+//    if (m_mid){
+//        delete[] m_mid;
+//    }
+//    if (m_high){
+//        delete[] m_high;
+//    }
 }

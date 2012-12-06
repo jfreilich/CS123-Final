@@ -21,7 +21,15 @@ HEADERS += lab/glwidget.h \
     support/camera.h \
     shape/Shape.h \
     shape/sphere.h \
-    shape/planet.h
+    shape/planet.h \
+    jasonShapes/triangle.h \
+    jasonShapes/torus.h \
+    jasonShapes/sphere.h \
+    jasonShapes/point.h \
+    jasonShapes/cylinder.h \
+    jasonShapes/cube.h \
+    jasonShapes/cone.h \
+    shape/planetmaster.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -31,9 +39,12 @@ SOURCES += \
     support/mainwindow.cpp \
     support/main.cpp \
     support/camera.cpp \
-    shape/Shape.cpp \
-    shape/sphere.cpp \
-    shape/planet.cpp
+    shape/planet.cpp \
+    jasonShapes/triangle.cpp \
+    jasonShapes/torus.cpp \
+    jasonShapes/sphere.cpp \
+    jasonShapes/point.cpp \
+    shape/planetmaster.cpp
 
 
 
