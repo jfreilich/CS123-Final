@@ -2,10 +2,10 @@
 #define SHAPE_H
 #include <stdio.h>
 #include <math.h>
-struct triangle{
+typedef struct triangle{
     double coordinates[9];
     double normals[9];
-};
+}triangle_t;
 
 class Shape {
 public:

@@ -20,7 +20,7 @@ HEADERS += lab/glwidget.h \
     support/mainwindow.h \
     support/camera.h \
     shape/Shape.h \
-    shape/sphere \
+    shape/sphere.h \
     shape/planet.h
 
 SOURCES += \
