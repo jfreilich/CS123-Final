@@ -115,12 +115,12 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
-    fileList.append(new QFile("/home/jfreilic/cs123final/final/lab09/stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
