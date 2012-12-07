@@ -14,5 +14,6 @@ void OrbitCamera::mouseMove(const Vector2 &delta)
 
 void OrbitCamera::mouseWheel(float delta)
 {
-    zoom *= powf(0.999f, delta);
+    zoom *= powf(0.999f, delta*2);
+    zoom = min(zoom, 250.0f);
 }
