@@ -119,7 +119,7 @@ void GLWidget::initializeGL()
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    int t=this->loadTexture("/home/jfreilic/cs123final/final/lab09/textures/desert");
+    int t=this->loadTexture("textures/desert");
     if (t==-1){
         cout << "texture failed." << endl;
     }

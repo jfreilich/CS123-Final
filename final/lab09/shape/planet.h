@@ -17,7 +17,7 @@ public:
 
     void modifyColor(Vector4 baseR, Vector4 baseG, Vector4 baseB);
     triangle_t* getMid(int &num);
-    unsigned int getTexture();
+    GLuint getTexture();
     Vector4 getR();
     Vector4 getG();
     Vector4 getB();
