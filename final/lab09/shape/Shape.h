@@ -12,6 +12,7 @@ public:
     Shape();
     virtual ~Shape();
     struct triangle get_triangle(int index);
+    triangle_t* get_triangles();
     int get_number_of_triangles();
     virtual void tesselate(int p1, int p2);
 protected:

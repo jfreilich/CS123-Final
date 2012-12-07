@@ -16,6 +16,10 @@ int Shape::get_number_of_triangles(){
 void Shape::tesselate(int p1, int p2){
 
 }
+triangle_t* Shape::get_triangles(){
+    return m_triangles;
+}
+
 triangle Shape::get_triangle(int index){
     if (index<=m_size){
         return m_triangles[index];

@@ -15,7 +15,6 @@ DEPENDPATH += lab \
 HEADERS += lab/glwidget.h \
     lib/targa.h \
     lib/glm.h \
-    math/vector.h \
     support/resourceloader.h \
     support/mainwindow.h \
     support/camera.h \
@@ -24,12 +23,14 @@ HEADERS += lab/glwidget.h \
     shape/planet.h \
     jasonShapes/triangle.h \
     jasonShapes/torus.h \
-    jasonShapes/sphere.h \
     jasonShapes/point.h \
     jasonShapes/cylinder.h \
     jasonShapes/cube.h \
     jasonShapes/cone.h \
-    shape/planetmaster.h
+    shape/planetmaster.h \
+    math/CS123Algebra.h \
+    lib/CS123Common.h \
+    math/stochastic.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -42,9 +43,12 @@ SOURCES += \
     shape/planet.cpp \
     jasonShapes/triangle.cpp \
     jasonShapes/torus.cpp \
-    jasonShapes/sphere.cpp \
     jasonShapes/point.cpp \
-    shape/planetmaster.cpp
+    shape/planetmaster.cpp \
+    shape/Shape.cpp \
+    shape/sphere.cpp \
+    math/CS123Matrix.cpp \
+    math/stochastic.cpp
 
 
 

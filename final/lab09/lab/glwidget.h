@@ -8,7 +8,6 @@
 #include <QTime>
 
 #include "camera.h"
-#include "vector.h"
 #include "resourceloader.h"
 #include "shape/planetmaster.h"
 
@@ -48,6 +47,8 @@ protected:
     void renderBlur(int width, int height);
     void renderScene();
     void paintText();
+    GLuint LoadTextureRAW( const char * filename, int wrap );
+    GLuint loadTexture(const QString &filename);
 
 private:
     QTimer m_timer;
@@ -60,6 +61,7 @@ private:
     // Resources
     QHash<QString, QGLShaderProgram *> m_shaderPrograms; // hash map of all shader programs
     QHash<QString, QGLFramebufferObject *> m_framebufferObjects; // hash map of all framebuffer objects
+    GLuint* m_textures;// list of textures
     PlanetMaster m_pms; // master of planets
     GLuint m_skybox; // skybox call list ID
     GLuint m_cubeMap; // cubeMap texture ID

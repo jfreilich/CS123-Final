@@ -51,13 +51,60 @@ GLWidget::~GLWidget()
     glDeleteLists(m_skybox, 1);
     const_cast<QGLContext *>(context())->deleteTexture(m_cubeMap);
     //glmDelete(m_dragon.model);
+
+    for (int i=0;i<10;i++){
+       // glDeleteTextures(1,&(m_textures[i]));
+    }
 }
+
+
+
+
+GLuint GLWidget::loadTexture(const QString &filename)
+{
+    // Make sure the image file exists
+    fflush(stdout);
+
+    QFile file(filename);
+    if (!file.exists())
+        return -1;
+
+    // Load the file into memory
+    QImage image;
+    image.load(file.fileName());
+    image = image.mirrored(false, true);
+    QImage texture = QGLWidget::convertToGLFormat(image);
+
+    // Generate a new OpenGL texture ID to put our image into
+    GLuint id = 0;
+    glGenTextures(1, &id);
+
+    // Make the texture we just created the new active texture
+    glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+
+    // Copy the image data into the OpenGL texture
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture.width(), texture.height(), GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
+
+    // Set filtering options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Set coordinate wrapping options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    return id;
+}
+
+
+
 
 /**
   Initialize the OpenGL state and start the drawing loop.
  **/
 void GLWidget::initializeGL()
 {
+    m_textures=(GLuint *) malloc(10*sizeof(GLuint));
     // Set up OpenGL
     glEnable(GL_TEXTURE_2D);
 
@@ -71,6 +118,17 @@ void GLWidget::initializeGL()
     glShadeModel(GL_FLAT);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    int t=this->loadTexture("/home/jfreilic/cs123final/final/lab09/textures/desert");
+    if (t==-1){
+        cout << "texture failed." << endl;
+    }
+    else{
+        m_textures[0]=t;
+    }
+
+
+
 
     // Load resources, including creating shader programs and framebuffer objects
     initializeResources();
@@ -90,14 +148,14 @@ void GLWidget::initializeResources()
     // by the video card.  But that's a pain to do so we're not going to.
     cout << "--- Loading Resources ---" << endl;
 
-
-
-
     //m_dragon = ResourceLoader::loadObjModel("/course/cs123/bin/models/xyzrgb_dragon.obj");
-
 
     //load textures here
     m_pms = PlanetMaster();
+    m_pms.addPlanet(0, 1, 1);
+    m_pms.addPlanet(0, 1, 1);
+    m_pms.addPlanet(0, 1, 1);
+    m_pms.addPlanet(0, 1, 1);
     m_pms.addPlanet(0, 1, 1);
     cout << "Loaded planet master..." << endl;
 
@@ -188,10 +246,11 @@ void GLWidget::applyOrthogonalCamera(float width, float height)
   @param width: the viewport width
   @param height: the viewport height
 **/
+static Vector3 fromAngles(float theta, float phi) { return Vector3(cosf(theta) * cosf(phi), sinf(phi), sinf(theta) * cosf(phi)); }
 void GLWidget::applyPerspectiveCamera(float width, float height)
 {
     float ratio = ((float) width) / height;
-    Vector3 dir(-Vector3::fromAngles(m_camera.theta, m_camera.phi));
+    Vector3 dir(-fromAngles(m_camera.theta, m_camera.phi));
     Vector3 eye(m_camera.center - dir * m_camera.zoom);
 
     glMatrixMode(GL_PROJECTION);
@@ -258,24 +317,24 @@ void GLWidget::paintGL()
 
 
     // TODO: Uncomment this section in step 2 of the lab
-    /*float scales[] = {4.f,8.f};
-    for (int i = 0; i < 2; ++i)
-    {
-        // Render the blurred brightpass filter result to fbo 1
-       renderBlur(width / scales[i], height / scales[i]);
+//    float scales[] = {4.f,8.f};
+//    for (int i = 0; i < 2; ++i)
+//    {
+//        // Render the blurred brightpass filter result to fbo 1
+//       renderBlur(width / scales[i], height / scales[i]);
 
-       // Bind the image from fbo to a texture
-        glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//       // Bind the image from fbo to a texture
+//        glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        // Enable alpha blending and render the texture to the screen
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        renderTexturedQuad(width * scales[i], height * scales[i]);
-        glDisable(GL_BLEND);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }*/
+//        // Enable alpha blending and render the texture to the screen
+//        glEnable(GL_BLEND);
+//        glBlendFunc(GL_ONE, GL_ONE);
+//        renderTexturedQuad(width * scales[i], height * scales[i]);
+//        glDisable(GL_BLEND);
+//        glBindTexture(GL_TEXTURE_2D, 0);
+//    }
 
     paintText();
 }
@@ -298,57 +357,63 @@ void GLWidget::renderScene()
     glEnable(GL_CULL_FACE);
 
     // Render the dragon with the refraction shader bound
-    glActiveTexture(GL_TEXTURE0);
-    m_shaderPrograms["refract"]->bind();
-    m_shaderPrograms["refract"]->setUniformValue("CubeMap", GL_TEXTURE0);
-    glPushMatrix();
+   // glActiveTexture(GL_TEXTURE0);
+  //  m_shaderPrograms["refract"]->bind();
+  //  m_shaderPrograms["refract"]->setUniformValue("CubeMap", GL_TEXTURE0);
+   // glPushMatrix();
    // glTranslatef(-1.25f, 0.f, 0.f);
     //glCallList(m_dragon.idx);
+glBindTexture(GL_TEXTURE_CUBE_MAP,0);
 
+glDisable(GL_TEXTURE_CUBE_MAP);
+glEnable(GL_TEXTURE_2D);
     QList<Planet*> planets = m_pms.getPlanets();
-
     int size=planets.size();
-    Triangle** tris;
-    Triangle* t;
+    triangle_t* tris;
+    triangle_t tri;
     int numTriangles;
-
-    Sphere gen = Sphere();
-    int numtris = 0;
-
-
+    glMatrixMode(GL_MODELVIEW);
     for (int j=0;j<size;j++) {
-        tris = planets.at(j)->getMid(numTriangles);
-//        tris = triangles[i];
-
-        for (int i=0;i<numTriangles;i++) {
-            t = tris[i];
-            glBegin(GL_TRIANGLES);
-
-            glNormal3f(t->vector[0]->x,
-                       t->vector[0]->y,
-                       t->vector[0]->z);
-
-            glVertex3f(t->points[0]->x,
-                       t->points[0]->y,
-                       t->points[0]->z);
-
-            glNormal3f(t->vector[1]->x,
-                       t->vector[1]->y,
-                       t->vector[1]->z);
-
-            glVertex3f(t->points[1]->x,
-                       t->points[1]->y,
-                       t->points[1]->z);
-
-            glNormal3f(t->vector[2]->x,
-                       t->vector[2]->y,
-                       t->vector[2]->z);
-
-            glVertex3f(t->points[2]->x,
-                       t->points[2]->y,
-                       t->points[2]->z);
-            glEnd();
+        Planet *planet=planets.at(j);
+        glPushMatrix();
+        glLoadIdentity();
+        Matrix4x4 tot=planet->getTotalTrans();
+        tot=tot.getTranspose();
+        glMultMatrixd(tot.data);
+        Vector4 velocity= planet->getV();
+        glTranslatef(velocity.x,velocity.y,velocity.z);
+        tris = planet->getMid(numTriangles);
+        double u,v,theta,psi,x,y,z;
+        int temp;
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,m_textures[0]);
+        glBegin(GL_TRIANGLES);
+        for (int a=0;a<numTriangles;a++){
+            tri=tris[a];
+            for (int m=0;m<3;m++){
+                temp=3*m;
+                glNormal3f(tri.normals[temp],tri.normals[temp+1],tri.normals[temp+2]);
+                x=tri.coordinates[temp];
+                temp++;
+                y=tri.coordinates[temp];
+                temp++;
+                z=tri.coordinates[temp];
+                theta=atan2(z,x);
+                u=-theta/(2.0*M_PI);
+                if(theta>=0){
+                    u=u+1.0;
+                }
+                psi=asin(2.0*y);
+                v=psi/M_PI+0.5;
+                if (v<=EPSILON||v>=1.0-EPSILON){
+                    u=0.5;
+                }
+                glTexCoord2d(u,v);
+                glVertex3f(x, y, z);
+            }
         }
+        glEnd();
+        glBindTexture(GL_TEXTURE_2D,0);
 
     }
 
@@ -356,18 +421,17 @@ void GLWidget::renderScene()
     m_shaderPrograms["refract"]->release();
 
     // Render the dragon with the reflection shader bound
-    m_shaderPrograms["reflect"]->bind();
-    m_shaderPrograms["reflect"]->setUniformValue("CubeMap", GL_TEXTURE0);
-    glPushMatrix();
-    glTranslatef(1.25f,0.f,0.f);
+   // m_shaderPrograms["reflect"]->bind();
+   // m_shaderPrograms["reflect"]->setUniformValue("CubeMap", GL_TEXTURE0);
+  //  glPushMatrix();
+ //   glTranslatef(1.25f,0.f,0.f);
     //glCallList(m_dragon.idx);
-    glPopMatrix();
-    m_shaderPrograms["reflect"]->release();
+ //   glPopMatrix();
+//    m_shaderPrograms["reflect"]->release();
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_CUBE_MAP,0);
-    glDisable(GL_TEXTURE_CUBE_MAP);
+
 }
 
 /**

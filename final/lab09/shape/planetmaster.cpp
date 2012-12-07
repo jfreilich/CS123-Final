@@ -3,7 +3,8 @@
 PlanetMaster::PlanetMaster()
 {
     m_planets = QList<Planet*>();
-    sphereGen = Sphere();
+    mid=new Sphere();
+    mid->tesselate(50,50);
 
 }
 
@@ -14,14 +15,24 @@ PlanetMaster::~PlanetMaster() {
 
 void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation) {
 
-    int numtris = 0;
 
-    Triangle** triangles = sphereGen.generate(49,49, numtris);
+
+
 
    // TODO perturb triangles
+    random_vals_t *rv;
+    Vector4 p=stochastic::position(rv);
+    Vector4 v=stochastic::position(rv);
+    int s=rand();
+    s=s%50;
+    Planet* temp = new Planet(mid->get_triangles(),mid->get_number_of_triangles() );
+  //  printf("%d\t%d\t%d\n",rv->p.x,rv->p.y,rv->p.z);
 
-    Planet* temp = new Planet(triangles, numtris);
 
+    fflush(stdout);
+    temp->set_velocity(v);
+    temp->scale(getScaleMat(Vector4(s,s,s,1)));
+    temp->trans(getTransMat(p));
     m_planets.append(temp);
 
 }

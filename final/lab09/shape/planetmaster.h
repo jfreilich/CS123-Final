@@ -1,11 +1,13 @@
 #ifndef PLANETMASTER_H
 #define PLANETMASTER_H
 
-#include "math/vector.h"
+#include "math/CS123Algebra.h"
 #include <QGLShaderProgram>
-#include "jasonShapes/sphere.h"
 #include "shape/planet.h"
+#include "shape/sphere.h"
 #include <QList>
+
+#include <GL/gl.h>
 
 
 class PlanetMaster
@@ -19,7 +21,8 @@ public:
 
 private:
     QList<Planet*> m_planets;
-    Sphere sphereGen;
+    Sphere* mid;
+    int* textures;
 };
 
 #endif // PLANETMASTER_H
