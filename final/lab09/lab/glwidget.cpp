@@ -36,7 +36,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_camera.theta = M_PI * 1.5f, m_camera.phi = 0.2f;
     m_camera.fovy = 60.f;
 
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
 
 /**
@@ -57,8 +57,28 @@ GLWidget::~GLWidget()
     }
 }
 
+/**
+  Our loop.
+**/
+void GLWidget::tick()
+{
+    update();
 
+    QList<Planet*> planets = m_pms.getPlanets();
+    int size = planets.size();
+    for (int i=0;i<size;i++) {
 
+        Planet* p = planets.at(i);
+
+        p->trans(getTransMat(p->getV()));
+
+    }
+
+    int r = rand();
+    r=r%100;
+    if (r<=10)
+        m_pms.addPlanet(0, 1, 1);
+}
 
 GLuint GLWidget::loadTexture(const QString &filename)
 {
@@ -119,7 +139,10 @@ void GLWidget::initializeGL()
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    int t=this->loadTexture("textures/desert");
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glActiveTexture(GL_TEXTURE0);
+
+    GLuint t=this->loadTexture("textures/desert");
     if (t==-1){
         cout << "texture failed." << endl;
     }
@@ -380,10 +403,12 @@ void GLWidget::renderScene()
 
         glActiveTexture(GL_TEXTURE0);
         m_shaderPrograms["planetShader"]->bind();
+
         //m_shaderPrograms["planetShader"]->setUniformValue("CubeMap",  GL_TEXTURE0);
 
         glBindTexture(GL_TEXTURE_2D, m_textures[0]);
         m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", m_textures[0]);
+
 
         m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->getR().x,planet->getR().y,planet->getR().z));
         m_shaderPrograms["planetShader"]->setUniformValue("colorG", QVector3D(planet->getG().x,planet->getG().y,planet->getG().z));
@@ -633,5 +658,5 @@ void GLWidget::paintText()
 
     // QGLWidget's renderText takes xy coordinates, a string, and a font
     renderText(10, 20, "FPS: " + QString::number((int) (m_prevFps)), m_font);
-    renderText(10, 35, "S: Save screenshot", m_font);
+    //renderText(10, 35, "S: Save screenshot", m_font);
 }

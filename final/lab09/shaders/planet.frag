@@ -24,5 +24,5 @@ vec4 sampleTextures()
 
 void main()
 {   
-    gl_FragColor = texture2D(planet_texture, gl_TexCoord[0].st);// * intensity;//vec4(0.4,0.4,1,1);//
+    gl_FragColor = vec4(0.4,0.4,1,1);//texture2D(planet_texture, gl_TexCoord[0].st) * intensity;//
 }

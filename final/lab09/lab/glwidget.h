@@ -50,6 +50,9 @@ protected:
     GLuint LoadTextureRAW( const char * filename, int wrap );
     GLuint loadTexture(const QString &filename);
 
+protected slots:
+    void tick();
+
 private:
     QTimer m_timer;
     QTime m_clock;
