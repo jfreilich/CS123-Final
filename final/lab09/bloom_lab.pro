@@ -61,6 +61,22 @@ OTHER_FILES += \
     shaders/reflect.vert \
     shaders/reflect.frag \
     shaders/brightpass.frag \
-    shaders/blur.frag
+    shaders/blur.frag \
+    shaders/terrain.vert \
+    shaders/terrain.vars \
+    shaders/terrain.frag \
+    shaders/pulse.vert \
+    shaders/pulse.vars \
+    shaders/pulse.frag \
+    shaders/planet.frag \
+    shaders/metal.vert \
+    shaders/metal.vars \
+    shaders/metal.frag \
+    shaders/glass.vert \
+    shaders/glass.vars \
+    shaders/glass.frag \
+    shaders/cartoon.vert \
+    shaders/cartoon.vars \
+    shaders/cartoon.frag
 
 RESOURCES +=

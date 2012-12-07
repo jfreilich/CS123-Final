@@ -25,6 +25,7 @@ void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation
     Vector4 v=stochastic::position(rv);
     int s=rand();
     s=s%50;
+
     Planet* temp = new Planet(mid->get_triangles(),mid->get_number_of_triangles() );
   //  printf("%d\t%d\t%d\n",rv->p.x,rv->p.y,rv->p.z);
 
