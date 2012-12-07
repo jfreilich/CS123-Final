@@ -196,6 +196,7 @@ void GLWidget::loadCubeMap()
 void GLWidget::createShaderPrograms()
 {
     const QGLContext *ctx = context();
+    m_shaderPrograms["planetShader"] = ResourceLoader::newFragShaderProgram(ctx, "shaders/planet.frag");
     m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "shaders/reflect.vert", "shaders/reflect.frag");
     m_shaderPrograms["refract"] = ResourceLoader::newShaderProgram(ctx, "shaders/refract.vert", "shaders/refract.frag");
     m_shaderPrograms["brightpass"] = ResourceLoader::newFragShaderProgram(ctx, "shaders/brightpass.frag");
@@ -357,32 +358,48 @@ void GLWidget::renderScene()
     glEnable(GL_CULL_FACE);
 
     // Render the dragon with the refraction shader bound
-   // glActiveTexture(GL_TEXTURE0);
-  //  m_shaderPrograms["refract"]->bind();
-  //  m_shaderPrograms["refract"]->setUniformValue("CubeMap", GL_TEXTURE0);
-   // glPushMatrix();
-   // glTranslatef(-1.25f, 0.f, 0.f);
-    //glCallList(m_dragon.idx);
-glBindTexture(GL_TEXTURE_CUBE_MAP,0);
 
-glDisable(GL_TEXTURE_CUBE_MAP);
-glEnable(GL_TEXTURE_2D);
+    // glPushMatrix();
+    // glTranslatef(-1.25f, 0.f, 0.f);
+    //glCallList(m_dragon.idx);
+    glBindTexture(GL_TEXTURE_CUBE_MAP,0);
+
+    glDisable(GL_TEXTURE_CUBE_MAP);
+    glEnable(GL_TEXTURE_2D);
     QList<Planet*> planets = m_pms.getPlanets();
     int size=planets.size();
     triangle_t* tris;
     triangle_t tri;
     int numTriangles;
     glMatrixMode(GL_MODELVIEW);
+
     for (int j=0;j<size;j++) {
-        Planet *planet=planets.at(j);
+        Planet *planet = planets.at(j);
+
+        // setting up shader
+
+        glActiveTexture(GL_TEXTURE0);
+        m_shaderPrograms["planetShader"]->bind();
+        //m_shaderPrograms["planetShader"]->setUniformValue("CubeMap",  GL_TEXTURE0);
+
+        glBindTexture(GL_TEXTURE_2D, m_textures[0]);
+        m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", m_textures[0]);
+
+        m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->getR().x,planet->getR().y,planet->getR().z));
+        m_shaderPrograms["planetShader"]->setUniformValue("colorG", QVector3D(planet->getG().x,planet->getG().y,planet->getG().z));
+        m_shaderPrograms["planetShader"]->setUniformValue("colorB", QVector3D(planet->getB().x,planet->getB().y,planet->getB().z));
+
         glPushMatrix();
         glLoadIdentity();
         Matrix4x4 tot=planet->getTotalTrans();
         tot=tot.getTranspose();
         glMultMatrixd(tot.data);
+
         Vector4 velocity= planet->getV();
         glTranslatef(velocity.x,velocity.y,velocity.z);
+
         tris = planet->getMid(numTriangles);
+
         double u,v,theta,psi,x,y,z;
         int temp;
         glEnable(GL_TEXTURE_2D);
@@ -418,7 +435,7 @@ glEnable(GL_TEXTURE_2D);
     }
 
     glPopMatrix();
-    m_shaderPrograms["refract"]->release();
+    m_shaderPrograms["planetShader"]->release();
 
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();

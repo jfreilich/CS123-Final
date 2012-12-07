@@ -7,9 +7,9 @@ void main(void) {
     // TODO: Step 1 - update the shader so that we set the
     // fragment color to black if the luminance is less than 1
 
-    if (luminance < 1.0)
-        sample.rgb = vec3(0.0,0.0,0.0);
-    else
+    //if (luminance < 1.0)
+    //    sample.rgb = vec3(0.0,0.0,0.0);
+    //else
         sample.rgb = vec3(luminance, luminance, luminance);
 
     gl_FragColor = sample;
