@@ -139,10 +139,14 @@ void GLWidget::initializeGL()
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+<<<<<<< HEAD
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glActiveTexture(GL_TEXTURE0);
 
     GLuint t=this->loadTexture("textures/desert");
+=======
+    GLuint t=this->loadTexture("textures/earth1.jpg");
+>>>>>>> bf479ce90756596cd4f0269bf5500d891a5f9396
     if (t==-1){
         cout << "texture failed." << endl;
     }
@@ -402,17 +406,28 @@ void GLWidget::renderScene()
         // setting up shader
 
         glActiveTexture(GL_TEXTURE0);
+<<<<<<< HEAD
         m_shaderPrograms["planetShader"]->bind();
 
         //m_shaderPrograms["planetShader"]->setUniformValue("CubeMap",  GL_TEXTURE0);
+=======
+//        m_shaderPrograms["planetShader"]->bind();
+//        //m_shaderPrograms["planetShader"]->setUniformValue("CubeMap",  GL_TEXTURE0);
+>>>>>>> bf479ce90756596cd4f0269bf5500d891a5f9396
 
-        glBindTexture(GL_TEXTURE_2D, m_textures[0]);
-        m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", m_textures[0]);
+//        glBindTexture(GL_TEXTURE_2D, m_textures[0]);
+//        m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", m_textures[0]);
 
+<<<<<<< HEAD
 
         m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->getR().x,planet->getR().y,planet->getR().z));
         m_shaderPrograms["planetShader"]->setUniformValue("colorG", QVector3D(planet->getG().x,planet->getG().y,planet->getG().z));
         m_shaderPrograms["planetShader"]->setUniformValue("colorB", QVector3D(planet->getB().x,planet->getB().y,planet->getB().z));
+=======
+//        m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->getR().x,planet->getR().y,planet->getR().z));
+//        m_shaderPrograms["planetShader"]->setUniformValue("colorG", QVector3D(planet->getG().x,planet->getG().y,planet->getG().z));
+//        m_shaderPrograms["planetShader"]->setUniformValue("colorB", QVector3D(planet->getB().x,planet->getB().y,planet->getB().z));
+>>>>>>> bf479ce90756596cd4f0269bf5500d891a5f9396
 
         glPushMatrix();
         glLoadIdentity();
@@ -427,6 +442,7 @@ void GLWidget::renderScene()
 
         double u,v,theta,psi,x,y,z;
         int temp;
+        glActiveTexture(GL_TEXTURE0);
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D,m_textures[0]);
         glBegin(GL_TRIANGLES);
@@ -450,7 +466,7 @@ void GLWidget::renderScene()
                 if (v<=EPSILON||v>=1.0-EPSILON){
                     u=0.5;
                 }
-                glTexCoord2d(u,v);
+                glTexCoord2d(100,100);
                 glVertex3f(x, y, z);
             }
         }
@@ -460,7 +476,7 @@ void GLWidget::renderScene()
     }
 
     glPopMatrix();
-    m_shaderPrograms["planetShader"]->release();
+   // m_shaderPrograms["planetShader"]->release();
 
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();

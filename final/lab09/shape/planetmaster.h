@@ -22,7 +22,7 @@ public:
 private:
     QList<Planet*> m_planets;
     Sphere* mid;
-    int* textures;
+    GLuint* textures;
 };
 
 #endif // PLANETMASTER_H
