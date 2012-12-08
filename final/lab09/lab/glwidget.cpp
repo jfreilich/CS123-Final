@@ -79,7 +79,7 @@ void GLWidget::tick()
         z=fabs(trans.l);
       //  printf("%i\t%f\t%f\t%f\n",size,x,y,z);
         fflush(stdout);
-        double max=175.5;
+        double max=300;
         if (x>=max||y>=max||z>=max){
             m_pms.remove_planet(i);
             planets.removeAt(i);
@@ -430,7 +430,7 @@ void GLWidget::renderScene()
 //        glBindTexture(GL_TEXTURE_2D, m_textures[0]);
 //        glActiveTexture(GL_TEXTURE0);
 //        m_shaderPrograms["planetShader"]->bind();
-//        m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", GL_TEXTURE0);
+//        m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", m_textures[0]);
 //        m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->getR().x,planet->getR().y,planet->getR().z));
 //        m_shaderPrograms["planetShader"]->setUniformValue("colorG", QVector3D(planet->getG().x,planet->getG().y,planet->getG().z));
 //        m_shaderPrograms["planetShader"]->setUniformValue("colorB", QVector3D(planet->getB().x,planet->getB().y,planet->getB().z));

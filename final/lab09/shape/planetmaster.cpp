@@ -34,14 +34,16 @@ void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation
     int r2=rand();
     r2=r2%101;
     double ra=r/100.0f;
-    ra*=M_PI;
+    ra*=M_PI/2.0;
     int orbit=rand();
     orbit=(orbit)%101;
     double orbitd=orbit/100.0f;
     orbitd*=M_PI/16.0;
     int s=rand();
     s=s%50;
-    GLUquadric* sphere=gluNewQuadric();
+
+    GLUquadric* sphere = gluNewQuadric();
+
     Planet* temp = new Planet(mid->get_triangles(),mid->get_number_of_triangles(),sphere );
 
     temp->set_velocity(v);
