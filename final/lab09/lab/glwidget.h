@@ -6,11 +6,11 @@
 #include <QString>
 #include <QTimer>
 #include <QTime>
-
+#include <math.h>
 #include "camera.h"
 #include "resourceloader.h"
 #include "shape/planetmaster.h"
-
+#include <GL/glu.h>
 class QGLShaderProgram;
 class QGLFramebufferObject;
 

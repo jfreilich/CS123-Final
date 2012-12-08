@@ -77,6 +77,7 @@ OTHER_FILES += \
     shaders/glass.frag \
     shaders/cartoon.vert \
     shaders/cartoon.vars \
-    shaders/cartoon.frag
+    shaders/cartoon.frag \
+    shaders/planet.vert
 
 RESOURCES +=

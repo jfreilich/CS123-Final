@@ -1,5 +1,4 @@
 #include "Shape.h"
-#include "math.h"
 Shape::Shape()
 {
      m_triangles=NULL;

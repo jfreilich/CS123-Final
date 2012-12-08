@@ -12,6 +12,10 @@ PlanetMaster::~PlanetMaster() {
     //TODO
     // delete m_planets
 }
+void PlanetMaster::remove_planet(int i){
+    delete m_planets.at(i);
+    m_planets.removeAt(i);
+}
 
 void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation) {
 
@@ -21,19 +25,35 @@ void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation
 
    // TODO perturb triangles
     random_vals_t *rv;
-    Vector4 p=stochastic::position(rv);
-    Vector4 v=stochastic::position(rv);
+    Vector4 p=5.0*stochastic::position(rv);
+    Vector4 v=stochastic::position(rv)/5.0;
+    int r=rand();
+    r=r%101;
+    double rd=r/100.0f;
+    rd=rd*M_PI/16.0;
+    int r2=rand();
+    r2=r2%101;
+    double ra=r/100.0f;
+    ra*=M_PI;
+    int orbit=rand();
+    orbit=(orbit)%101;
+    double orbitd=orbit/100.0f;
+    orbitd*=M_PI/16.0;
     int s=rand();
     s=s%50;
+    GLUquadric* sphere=gluNewQuadric();
+    Planet* temp = new Planet(mid->get_triangles(),mid->get_number_of_triangles(),sphere );
 
-    Planet* temp = new Planet(mid->get_triangles(),mid->get_number_of_triangles() );
-  //  printf("%d\t%d\t%d\n",rv->p.x,rv->p.y,rv->p.z);
-
-
-    fflush(stdout);
     temp->set_velocity(v);
     temp->scale(getScaleMat(Vector4(s,s,s,1)));
+    temp->set_radius(s);
     temp->trans(getTransMat(p));
+    temp->set_axis_angle(ra);
+    Matrix4x4 rot=getRotXMat(rd);
+    temp->rot(rot);
+    temp->orbit_rot(getRotYMat(orbitd));
+    temp->calculate_composite_transformations();
+
     m_planets.append(temp);
 
 }

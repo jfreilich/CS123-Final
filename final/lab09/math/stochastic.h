@@ -1,6 +1,8 @@
 #ifndef STOCHASTIC_H
 #define STOCHASTIC_H
 #include "CS123Algebra.h"
+//#include <random>
+#include <cstdlib>
 
 
 typedef struct randomVals{
