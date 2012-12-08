@@ -1,3 +1,5 @@
 final/final.pro.user
 final-build-desktop/
 final/bloom_lab-build-desktop/
+final/lab09/*.o
+final/*.o

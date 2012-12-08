@@ -37,14 +37,14 @@ public:
     Matrix4x4 get_trans();
     GLUquadric* get_sphere();
    double get_radius();
-
+    void set_texture(int texture);
     void set_radius(double r);
 
 private:
     triangle_t* m_mid;
     int m_numMid;
     GLUquadric* m_sphere;
-    GLuint m_texture;
+    int m_texture;
     Vector4 m_r, m_g, m_b, m_p, m_v;
     Matrix4x4 m_axis, m_rot, m_rot_velocity, m_orbit_rot, m_orbit_rot_velocity; //rotational motion
     Matrix4x4 m_trans, m_velocity; //linear motion
