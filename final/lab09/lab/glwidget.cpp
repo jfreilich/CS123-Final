@@ -79,7 +79,7 @@ void GLWidget::tick()
         z=fabs(trans.l);
       //  printf("%i\t%f\t%f\t%f\n",size,x,y,z);
         fflush(stdout);
-        double max=175.5;
+        double max=300;
         if (x>=max||y>=max||z>=max){
             m_pms.remove_planet(i);
             planets.removeAt(i);
@@ -451,6 +451,7 @@ void GLWidget::renderScene()
         Planet *planet = planets.at(j);
 
         // setting up shader
+
         glEnable(GL_TEXTURE_2D);
 
         glPushMatrix();
