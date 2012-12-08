@@ -17,7 +17,7 @@ void PlanetMaster::remove_planet(int i){
     m_planets.removeAt(i);
 }
 
-void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation) {
+void PlanetMaster::addPlanet() {
 
 
 
@@ -26,7 +26,9 @@ void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation
    // TODO perturb triangles
     random_vals_t *rv;
     Vector4 p=5.0*stochastic::position(rv);
+    p.z=150.0;
     Vector4 v=stochastic::position(rv)/5.0;
+    v.z=-fabs(v.z);
     int r=rand();
     r=r%101;
     double rd=r/100.0f;
@@ -41,6 +43,8 @@ void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation
     orbitd*=M_PI/16.0;
     int s=rand();
     s=s%50;
+    int texture=rand();
+    texture=texture%TEXTURES;
     GLUquadric* sphere=gluNewQuadric();
     Planet* temp = new Planet(mid->get_triangles(),mid->get_number_of_triangles(),sphere );
 
@@ -53,7 +57,7 @@ void PlanetMaster::addPlanet(GLuint *texture, double radius, double perturbation
     temp->rot(rot);
     temp->orbit_rot(getRotYMat(orbitd));
     temp->calculate_composite_transformations();
-
+    temp->set_texture(texture);
     m_planets.append(temp);
 
 }

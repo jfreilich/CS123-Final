@@ -19,6 +19,9 @@ Planet::Planet(triangle_t* mid, int numMid,GLUquadric* sphere)
 
 
 }
+void Planet::set_texture(int texture){
+    m_texture=texture;
+}
 
 triangle_t* Planet::getMid(int &num) {
 

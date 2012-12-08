@@ -53,7 +53,7 @@ GLWidget::~GLWidget()
     const_cast<QGLContext *>(context())->deleteTexture(m_cubeMap);
     //glmDelete(m_dragon.model);
 
-    for (int i=0;i<10;i++){
+    for (int i=0;i<TEXTURES;i++){
        // glDeleteTextures(1,&(m_textures[i]));
     }
 }
@@ -90,9 +90,9 @@ void GLWidget::tick()
     }
 
     int r = rand();
-    r=r%1000;
+    r=r%100;
     if (r<=5){
-        m_pms.addPlanet(0, 1, 1);
+        m_pms.addPlanet();
     }
 }
 
@@ -163,14 +163,42 @@ void GLWidget::initializeGL()
 
    // GLuint t=this->loadTexture("textures/desert");
 
-    GLuint t=this->loadTexture("textures/desert");
-
+    GLuint t=this->loadTexture("textures/earth.png");
     if (t==-1){
-        cout << "texture failed." << endl;
+        cout << "earth texture failed." << endl;
     }
     else{
         m_textures[0]=t;
     }
+    t=this->loadTexture("textures/desert");
+    if (t==-1){
+        cout << "desert texture failed." << endl;
+    }
+    else{
+        m_textures[1]=t;
+    }
+    t=this->loadTexture("textures/cloud.jpg");
+    if (t==-1){
+        cout << "cloud texture failed." << endl;
+    }
+    else{
+        m_textures[2]=t;
+    }
+    t=this->loadTexture("textures/green.jpg");
+    if (t==-1){
+        cout << "green texture failed." << endl;
+    }
+    else{
+        m_textures[3]=t;
+    }
+    t=this->loadTexture("textures/jupiter.jpg");
+    if (t==-1){
+        cout << "jupiter texture failed." << endl;
+    }
+    else{
+        m_textures[4]=t;
+    }
+
 
 
 
@@ -197,11 +225,8 @@ void GLWidget::initializeResources()
 
     //load textures here
     m_pms = PlanetMaster();
-    m_pms.addPlanet(0, 1, 1);
-    m_pms.addPlanet(0, 1, 1);
-    m_pms.addPlanet(0, 1, 1);
-    m_pms.addPlanet(0, 1, 1);
-    m_pms.addPlanet(0, 1, 1);
+    m_pms.addPlanet();
+    m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();
     cout << "Loaded planet master..." << endl;
 
     m_skybox = ResourceLoader::loadSkybox();
@@ -449,7 +474,7 @@ void GLWidget::renderScene()
         int temp;
         glActiveTexture(m_textures[0]);
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D,m_textures[0]);
+        glBindTexture(GL_TEXTURE_2D,m_textures[planet->getTexture()]);
         GLUquadricObj *sphere=planet->get_sphere();
         gluSphere(sphere,planet->get_radius(),100,100);
         gluQuadricNormals(sphere, GLU_SMOOTH);
