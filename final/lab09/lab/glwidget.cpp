@@ -76,11 +76,11 @@ void GLWidget::tick()
         float x,y,z;
         x=fabs(trans.d);
         y=fabs(trans.h);
-        z=fabs(trans.l);
+        z=trans.l;
       //  printf("%i\t%f\t%f\t%f\n",size,x,y,z);
         fflush(stdout);
         double max=300;
-        if (x>=max||y>=max||z>=max){
+        if (x>=max||y>=max||z<=-max){
             m_pms.remove_planet(i);
             planets.removeAt(i);
             i--;
@@ -90,9 +90,9 @@ void GLWidget::tick()
     }
 
     int r = rand();
-    r=r%100;
-    if (r<=5){
-        m_pms.addPlanet();
+    r=r%1000;
+    if (r<=10){
+      //  m_pms.addPlanet();
     }
 }
 
@@ -226,7 +226,7 @@ void GLWidget::initializeResources()
     //load textures here
     m_pms = PlanetMaster();
     m_pms.addPlanet();
-    m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();
+   //m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();
     cout << "Loaded planet master..." << endl;
 
     m_skybox = ResourceLoader::loadSkybox();
@@ -266,7 +266,7 @@ void GLWidget::loadCubeMap()
 void GLWidget::createShaderPrograms()
 {
     const QGLContext *ctx = context();
-    m_shaderPrograms["planetShader"] = ResourceLoader::newFragShaderProgram(ctx, "shaders/planet.frag");
+    m_shaderPrograms["planetShader"] = ResourceLoader::newShaderProgram(ctx, "shaders/planet.vert", "shaders/planet.frag");
     m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "shaders/reflect.vert", "shaders/reflect.frag");
     m_shaderPrograms["refract"] = ResourceLoader::newShaderProgram(ctx, "shaders/refract.vert", "shaders/refract.frag");
     m_shaderPrograms["brightpass"] = ResourceLoader::newFragShaderProgram(ctx, "shaders/brightpass.frag");

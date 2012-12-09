@@ -11,7 +11,7 @@ Vector4 stochastic::position(random_vals_t * rv){
     int y=rand();
     y=y%600;
     y=y-300;
-    int z=299;
+    int z=250;
     Vector4 p=Vector4(x, y, z,0);
     //rv->p=rv->p/25.0;
     return p;

@@ -11,8 +11,9 @@ void main()
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
     vec4 color=texture2D(planet_texture, gl_TexCoord[0].st);
-    vec4 newPoint=gl_vertex.xyzw;
-    double colorIntensity=color.r*color.r+color.g*color.g+color.b*color.b;
+    vec4 newPoint=gl_Vertex.xyzw;
+    float colorIntensity=color.r*color.r+color.g*color.g+color.b*color.b;
+    colorIntensity/=5.0;
     newPoint.x=newPoint.x+colorIntensity;
     newPoint.y=newPoint.y+colorIntensity;
     newPoint.z=newPoint.z+colorIntensity;

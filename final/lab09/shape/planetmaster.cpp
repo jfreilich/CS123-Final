@@ -26,7 +26,7 @@ void PlanetMaster::addPlanet() {
    // TODO perturb triangles
     random_vals_t *rv;
     Vector4 p=stochastic::position(rv);
-    Vector4 v=stochastic::velocity(rv)/100.0;
+    Vector4 v=stochastic::velocity(rv)/1000.0;
     int r=rand();
     r=r%101;
     double rd=r/100.0f;

@@ -129,6 +129,7 @@ void Planet::move(){
     m_rot *= m_rot_velocity;
     m_orbit_rot *= m_orbit_rot_velocity;
     m_total =m_trans * m_axis * m_rot * m_constant;
+    m_total=m_constant;
 }
 
 void Planet::orbit_rot(Matrix4x4 rot){
