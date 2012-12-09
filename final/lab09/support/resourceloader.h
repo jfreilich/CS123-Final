@@ -1,6 +1,6 @@
 #ifndef RESOURCELOADER_H
 #define RESOURCELOADER_H
-
+#define EXTENT 300.0f
 #include <QFile>
 #include <QGLShaderProgram>
 #include "glm.h"

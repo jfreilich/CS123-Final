@@ -25,10 +25,8 @@ void PlanetMaster::addPlanet() {
 
    // TODO perturb triangles
     random_vals_t *rv;
-    Vector4 p=5.0*stochastic::position(rv);
-    p.z=150.0;
-    Vector4 v=stochastic::position(rv)/5.0;
-    v.z=-fabs(v.z);
+    Vector4 p=stochastic::position(rv);
+    Vector4 v=stochastic::velocity(rv)/100.0;
     int r=rand();
     r=r%101;
     double rd=r/100.0f;
@@ -57,7 +55,7 @@ void PlanetMaster::addPlanet() {
     temp->set_axis_angle(ra);
     Matrix4x4 rot=getRotXMat(rd);
     temp->rot(rot);
-    temp->orbit_rot(getRotYMat(orbitd));
+    temp->orbit_rot(getRotZMat(orbitd));
     temp->calculate_composite_transformations();
     temp->set_texture(texture);
     m_planets.append(temp);

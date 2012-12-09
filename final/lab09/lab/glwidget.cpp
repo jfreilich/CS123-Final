@@ -464,7 +464,6 @@ void GLWidget::renderScene()
         glEnable(GL_TEXTURE_2D);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,m_textures[planet->getTexture()]);
-       // glBindTexture(GL_TEXTURE_2D, m_textures[0]);
         m_shaderPrograms["planetShader"]->bind();
         m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", 0);
         m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->getR().x,planet->getR().y,planet->getR().z));
