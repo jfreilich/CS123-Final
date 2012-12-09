@@ -13,10 +13,12 @@ void main()
     vec4 color=texture2D(planet_texture, gl_TexCoord[0].st);
     vec4 newPoint=gl_Vertex.xyzw;
     float colorIntensity=color.r*color.r+color.g*color.g+color.b*color.b;
-    colorIntensity/=5.0;
-    newPoint.x=newPoint.x+colorIntensity;
-    newPoint.y=newPoint.y+colorIntensity;
-    newPoint.z=newPoint.z+colorIntensity;
+    colorIntensity=colorIntensity/10.0;
+    colorIntensity=colorIntensity+1.0;
+
+    newPoint.x=colorIntensity*newPoint.x;
+    newPoint.y=colorIntensity*newPoint.y;
+    newPoint.z=colorIntensity*newPoint.z;
     gl_Position = gl_ModelViewProjectionMatrix*newPoint;
     
 
