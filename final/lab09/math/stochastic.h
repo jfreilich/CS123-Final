@@ -21,6 +21,7 @@ class stochastic
 public:
     stochastic();
     static Vector4 position(random_vals_t * rv);
+    static Vector4 velocity(random_vals_t * rv);
 };
 
 #endif // STOCHASTIC_H

@@ -125,10 +125,14 @@ GLUquadric* Planet::get_sphere(){
 }
 
 void Planet::move(){
-    m_trans *= m_velocity;
+   m_trans *= m_velocity;
     m_rot *= m_rot_velocity;
     m_orbit_rot *= m_orbit_rot_velocity;
     m_total =m_trans * m_axis * m_rot * m_constant;
+<<<<<<< HEAD
+=======
+    m_total=m_constant;
+>>>>>>> 6b6a1d19c3683ef2d867b8f32a11cceac8fabc20
 }
 
 void Planet::orbit_rot(Matrix4x4 rot){
