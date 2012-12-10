@@ -30,7 +30,9 @@ HEADERS += lab/glwidget.h \
     shape/planetmaster.h \
     math/CS123Algebra.h \
     lib/CS123Common.h \
-    math/stochastic.h
+    math/stochastic.h \
+    support/particleemitter.h \
+    support/common.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -48,7 +50,8 @@ SOURCES += \
     shape/Shape.cpp \
     shape/sphere.cpp \
     math/CS123Matrix.cpp \
-    math/stochastic.cpp
+    math/stochastic.cpp \
+    support/particleemitter.cpp
 
 
 

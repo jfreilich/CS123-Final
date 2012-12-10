@@ -7,6 +7,8 @@
 #include <GL/gl.h>
 #include "math/stochastic.h"
 #include <GL/glu.h>
+#include "support/particleemitter.h"
+
 using namespace std;
 
 class Planet
@@ -39,6 +41,7 @@ public:
    double get_radius();
     void set_texture(int texture);
     void set_radius(double r);
+    ParticleEmitter *emitter;
 
 private:
     triangle_t* m_mid;
@@ -51,6 +54,7 @@ private:
     Matrix4x4 m_scale, m_constant; //constants
     Matrix4x4 m_total;
     double m_axis_angle,m_radius;
+
 
 };
 

@@ -1,5 +1,6 @@
 #include "planet.h"
 #include <cstring>
+
 Planet::Planet(triangle_t* mid, int numMid,GLUquadric* sphere)
 {
     m_mid =new triangle_t[numMid];
@@ -14,9 +15,7 @@ Planet::Planet(triangle_t* mid, int numMid,GLUquadric* sphere)
     m_total=Matrix4x4::identity();
     m_sphere=sphere;
 
-
-
-
+    emitter = new ParticleEmitter(2);
 
 }
 void Planet::set_texture(int texture){
@@ -46,6 +45,7 @@ Planet::~Planet(){
         delete[] m_mid;
     }
     delete m_sphere;
+    delete emitter;
 //    if (m_high){
 //        delete[] m_high;
 //    }
@@ -129,7 +129,6 @@ void Planet::move(){
     m_rot *= m_rot_velocity;
     m_orbit_rot *= m_orbit_rot_velocity;
     m_total =m_trans * m_axis * m_rot * m_constant;
-//    m_total=m_constant;
 }
 
 void Planet::orbit_rot(Matrix4x4 rot){
