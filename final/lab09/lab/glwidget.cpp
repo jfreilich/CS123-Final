@@ -52,6 +52,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_camera.theta = M_PI * 1.5f, m_camera.phi = 0.2f;
     m_camera.fovy = 60.f;
 
+    pause = false;
 
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
@@ -83,40 +84,37 @@ void GLWidget::tick()
 
     handleKeys();
 
-    QList<Planet*> planets = m_pms.getPlanets();
-    int size = planets.size();
-    for (int i=0;i<size;i++) {
+    if (!pause) {
 
-        Planet* p = planets.at(i);
+        QList<Planet*> planets = m_pms.getPlanets();
+        int size = planets.size();
+        for (int i=0;i<size;i++) {
 
-        p->move();
-        Matrix4x4 trans=p->get_trans();
-        float x,y,z;
-        x=fabs(trans.d);
-        y=fabs(trans.h);
-        z=trans.l;
-      //  printf("%i\t%f\t%f\t%f\n",size,x,y,z);
-        fflush(stdout);
-        double max=300;
-        if (x>=max||y>=max||z<=-max){
-            m_pms.remove_planet(i);
-            planets.removeAt(i);
-            i--;
-            size--;
+            Planet* p = planets.at(i);
+
+            p->move();
+            Matrix4x4 trans=p->get_trans();
+            float x,y,z;
+            x=fabs(trans.d);
+            y=fabs(trans.h);
+            z=trans.l;
+          //  printf("%i\t%f\t%f\t%f\n",size,x,y,z);
+            fflush(stdout);
+            double max=300;
+            if (x>=max||y>=max||z<=-max){
+                m_pms.remove_planet(i);
+                planets.removeAt(i);
+                i--;
+                size--;
+            }
+
         }
 
-    }
-
-    int r = rand();
-<<<<<<< HEAD
-    r=r%10000;
-    if (r<=5){
-        m_pms.addPlanet();
-=======
-    r=r%1000;
-    if (r<=10){
-      //  m_pms.addPlanet();
->>>>>>> 6b6a1d19c3683ef2d867b8f32a11cceac8fabc20
+        int r = rand();
+        r=r%1000;
+        if (r<=10){
+            m_pms.addPlanet();
+        }
     }
 }
 
@@ -487,7 +485,6 @@ void GLWidget::renderScene()
         Matrix4x4 tot=planet->getTotalTrans();
         tot=tot.getTranspose();
         glMultMatrixd(tot.data);
-<<<<<<< HEAD
 
         /*particles*/
         glDisable(GL_DEPTH);
@@ -508,8 +505,6 @@ void GLWidget::renderScene()
 
         tris = planet->getMid(numTriangles);
 
-=======
->>>>>>> 6b6a1d19c3683ef2d867b8f32a11cceac8fabc20
         double u,v,theta,psi,x,y,z;
         int temp;
         glEnable(GL_TEXTURE_2D);
@@ -705,7 +700,9 @@ void GLWidget::createBlurKernel(int radius, int width, int height,
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) QApplication::quit();
-
+    if (event->key() == Qt::Key_Space) {
+        pause = !pause;
+    }
 
     if (event->isAutoRepeat())
         return;
@@ -715,6 +712,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         keys.append(event->key());
     else if (down && event->type() == QEvent::KeyRelease)
         keys.removeAll(event->key());
+
 }
 void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {

@@ -64,6 +64,7 @@ private:
     float m_prevFps, m_fps;
     Vector2 m_prevMousePos;
     OrbitCamera m_camera;
+    bool pause;
 
     // Resources
     QHash<QString, QGLShaderProgram *> m_shaderPrograms; // hash map of all shader programs
