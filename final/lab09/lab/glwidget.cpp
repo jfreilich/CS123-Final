@@ -92,7 +92,7 @@ void GLWidget::tick()
     int r = rand();
     r=r%1000;
     if (r<=10){
-      //  m_pms.addPlanet();
+        m_pms.addPlanet();
     }
 }
 

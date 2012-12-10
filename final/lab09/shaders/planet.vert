@@ -20,6 +20,7 @@ void main()
     newPoint.y=colorIntensity*newPoint.y;
     newPoint.z=colorIntensity*newPoint.z;
     gl_Position = gl_ModelViewProjectionMatrix*newPoint;
+    gl_Position=ftransform();
     
 
     
