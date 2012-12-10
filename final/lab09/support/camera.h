@@ -13,13 +13,13 @@ using namespace std;
 **/
 struct OrbitCamera
 {
-    Vector3 center, up;
+    Vector3 center, dir, eye, up;
     float theta, phi;
     float fovy;
     float zoom;
 
     void mouseMove(const Vector2 &delta);
-    void mouseWheel(float delta);
+    void move(Vector2 direction, float delta);
 };
 
 #endif // CAMERA_H

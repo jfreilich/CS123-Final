@@ -32,7 +32,7 @@ void PlanetMaster::addPlanet() {
     int r=rand();
     r=r%101;
     double rd=r/100.0f;
-    rd=rd*M_PI/16.0;
+    rd=rd*M_PI/64.0;
     int r2=rand();
     r2=r2%101;
     double ra=r/100.0f;

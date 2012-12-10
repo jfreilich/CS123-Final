@@ -32,6 +32,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
     // Initialization code
     void initializeResources();
@@ -50,12 +51,15 @@ protected:
     GLuint LoadTextureRAW( const char * filename, int wrap );
     GLuint loadTexture(const QString &filename);
 
+    void handleKeys();
+
 protected slots:
     void tick();
 
 private:
     QTimer m_timer;
     QTime m_clock;
+    QList<int> keys;
     int m_prevTime;
     float m_prevFps, m_fps;
     Vector2 m_prevMousePos;

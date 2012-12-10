@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QGLFramebufferObject>
 #include <QGLShaderProgram>
+#include <QApplication>
 #include <QMouseEvent>
 #include <QTime>
 #include <QTimer>
@@ -12,6 +13,18 @@
 
 using std::cout;
 using std::endl;
+
+/*
+ box sizing localization
+
+ orbit velocity around particular axis and on particular axes
+
+ particle generation around planets / rings
+
+ movement around box
+
+ lytro effect w/ pausing/saving image
+ */
 
 extern "C"
 {
@@ -29,6 +42,9 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
 {
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
+    setCursor(Qt::BlankCursor);
+
+    keys = QList<int>();
 
     m_camera.center = Vector3(0.f, 0.f, -250.f);
     m_camera.up = Vector3(0.f, 1.f, 0.f);
@@ -65,6 +81,8 @@ void GLWidget::tick()
 {
     update();
 
+    handleKeys();
+
     QList<Planet*> planets = m_pms.getPlanets();
     int size = planets.size();
     for (int i=0;i<size;i++) {
@@ -90,11 +108,25 @@ void GLWidget::tick()
     }
 
     int r = rand();
-    r=r%100;
+    r=r%10000;
     if (r<=5){
         m_pms.addPlanet();
     }
 }
+
+void GLWidget::handleKeys() {
+
+    if (keys.contains(Qt::Key_W))
+        m_camera.move(Vector2(0,1),5);
+    if (keys.contains(Qt::Key_A))
+        m_camera.move(Vector2(-1,0),5);
+    if (keys.contains(Qt::Key_S))
+        m_camera.move(Vector2(0,-1),5);
+    if (keys.contains(Qt::Key_D))
+        m_camera.move(Vector2(1,0),5);
+
+}
+
 
 GLuint GLWidget::loadTexture(const QString &filename)
 {
@@ -145,24 +177,15 @@ void GLWidget::initializeGL()
     m_textures=(GLuint *) malloc(10*sizeof(GLuint));
     // Set up OpenGL
     glEnable(GL_TEXTURE_2D);
-
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
-
     glDisable(GL_DITHER);
-
     glDisable(GL_LIGHTING);
     glShadeModel(GL_FLAT);
-
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glActiveTexture(GL_TEXTURE0);
-
-   // GLuint t=this->loadTexture("textures/desert");
-
     GLuint t=this->loadTexture("textures/earth.png");
     if (t==-1){
         cout << "earth texture failed." << endl;
@@ -199,13 +222,8 @@ void GLWidget::initializeGL()
         m_textures[4]=t;
     }
 
-
-
-
-
     // Load resources, including creating shader programs and framebuffer objects
     initializeResources();
-
     // Start the drawing timer
     m_timer.start(1000.0f / MAX_FPS);
 }
@@ -321,14 +339,17 @@ static Vector3 fromAngles(float theta, float phi) { return Vector3(cosf(theta) *
 void GLWidget::applyPerspectiveCamera(float width, float height)
 {
     float ratio = ((float) width) / height;
-    Vector3 dir(-fromAngles(m_camera.theta, m_camera.phi));
-    Vector3 eye(m_camera.center - dir * m_camera.zoom);
+    //Vector3 dir(-fromAngles(m_camera.theta, m_camera.phi));
+    //Vector3 eye(m_camera.center - dir * m_camera.zoom);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(m_camera.fovy, ratio, 0.1f, 1000.f);
-    gluLookAt(eye.x, eye.y, eye.z, eye.x + dir.x, eye.y + dir.y, eye.z + dir.z,
+
+    gluLookAt(m_camera.eye.x, m_camera.eye.y, m_camera.eye.z,
+              m_camera.eye.x + m_camera.dir.x, m_camera.eye.y + m_camera.dir.y, m_camera.eye.z + m_camera.dir.z,
               m_camera.up.x, m_camera.up.y, m_camera.up.z);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -373,18 +394,18 @@ void GLWidget::paintGL()
     // only to fbo_2
 
 
-    m_framebufferObjects["fbo_2"]->bind();
-    m_shaderPrograms["brightpass"]->bind();
+//    m_framebufferObjects["fbo_2"]->bind();
+//    m_shaderPrograms["brightpass"]->bind();
 
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+//    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
 
-    renderTexturedQuad(width,height);
+//    renderTexturedQuad(width,height);
 
-    m_shaderPrograms["brightpass"]->release();
+//    m_shaderPrograms["brightpass"]->release();
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+//    glBindTexture(GL_TEXTURE_2D, 0);
 
-    m_framebufferObjects["fbo_2"]->release();
+//    m_framebufferObjects["fbo_2"]->release();
 
 
     // TODO: Uncomment this section in step 2 of the lab
@@ -450,6 +471,7 @@ void GLWidget::renderScene()
     for (int j=0;j<size;j++) {
         Planet *planet = planets.at(j);
 
+
         // setting up shader
 //        glEnable(GL_TEXTURE_2D);
 //        glBindTexture(GL_TEXTURE_2D, m_textures[0]);
@@ -467,6 +489,23 @@ void GLWidget::renderScene()
         Matrix4x4 tot=planet->getTotalTrans();
         tot=tot.getTranspose();
         glMultMatrixd(tot.data);
+
+        /*particles*/
+        glDisable(GL_DEPTH);
+        glEnable(GL_BLEND);
+
+        //planet->emitter->updateParticles();       //Move the particles
+        //planet->emitter->drawParticles();         //Draw the particles
+
+        glAccum(GL_MULT, .9f);
+
+        glAccum(GL_ACCUM, 0.1f);
+//
+        glAccum(GL_RETURN, 1.0f);
+
+        glFlush();
+        /*particles*/
+
 
         tris = planet->getMid(numTriangles);
 
@@ -570,11 +609,14 @@ void GLWidget::renderBlur(int width, int height)
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     Vector2 pos(event->x(), event->y());
-    if (event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
-    {
+    //if (event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
+    //{
         m_camera.mouseMove(pos - m_prevMousePos);
-    }
-    m_prevMousePos = pos;
+    //}
+
+    m_prevMousePos = Vector2(width()/2,height()/2);
+    QPoint glob = mapToGlobal(QPoint(width()/2,height()/2));
+    QCursor::setPos(glob);
 }
 
 /**
@@ -582,6 +624,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
  **/
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+
     m_prevMousePos.x = event->x();
     m_prevMousePos.y = event->y();
 }
@@ -593,7 +636,7 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 {
     if (event->orientation() == Qt::Vertical)
     {
-        m_camera.mouseWheel(event->delta());
+        //m_camera.mouseWheel(event->delta());
     }
 }
 
@@ -683,17 +726,29 @@ void GLWidget::createBlurKernel(int radius, int width, int height,
  **/
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
-    switch(event->key())
-    {
-        case Qt::Key_S:
-        QImage qi = grabFrameBuffer(false);
-        QString filter;
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"), "", tr("PNG Image (*.png)"), &filter);
-        qi.save(QFileInfo(fileName).absoluteDir().absolutePath() + "/" + QFileInfo(fileName).baseName() + ".png", "PNG", 100);
-        break;
-    }
-}
+    if (event->key() == Qt::Key_Escape) QApplication::quit();
 
+
+    if (event->isAutoRepeat())
+        return;
+
+    bool down = keys.contains(event->key());
+    if (!down && event->type() == QEvent::KeyPress)
+        keys.append(event->key());
+    else if (down && event->type() == QEvent::KeyRelease)
+        keys.removeAll(event->key());
+}
+void GLWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->isAutoRepeat())
+        return;
+
+    bool down = keys.contains(event->key());
+    if (!down && event->type() == QEvent::KeyPress)
+        keys.append(event->key());
+    else if (down && event->type() == QEvent::KeyRelease)
+        keys.removeAll(event->key());
+}
 /**
   Draws text for the FPS and screenshot prompt
  **/
