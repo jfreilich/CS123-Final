@@ -1,5 +1,8 @@
 #include "camera.h"
 #include <qgl.h>
+
+#include <iostream>
+
 #define M_2PI (2.0*M_PI)
 void OrbitCamera::mouseMove(const Vector2 &delta)
 {
@@ -24,4 +27,10 @@ void OrbitCamera::move(Vector2 direction, float delta)
             eye += dir * delta;
     if (direction.y == -1)
             eye -= dir * delta;
+
+    //eye.y = max(-290.0,min(290.0,eye.y));
+    //eye.x = max(-290.0,min(290.0,eye.x));
+    //eye.z = max(-290.0,min(290.0,eye.z));
+
+    //cout << eye << endl;
 }

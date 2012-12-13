@@ -1,7 +1,7 @@
 #ifndef PLANETMASTER_H
 #define PLANETMASTER_H
 
-#define TEXTURES 5
+#define TEXTURES 4
 #include <QGLShaderProgram>
 #include "shape/planet.h"
 #include <QList>
@@ -13,7 +13,7 @@ public:
     PlanetMaster();
     virtual ~PlanetMaster();
     void remove_planet(int i);
-    void addPlanet();
+    void addPlanet(Vector3 cam_pos);
     QList<Planet*> getPlanets();
 
 private:

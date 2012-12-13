@@ -15,7 +15,7 @@ Planet::Planet(triangle_t* mid, int numMid,GLUquadric* sphere)
     m_total=Matrix4x4::identity();
     m_sphere=sphere;
 
-    emitter = new ParticleEmitter(2);
+    //emitter = new ParticleEmitter(2);
 
 }
 void Planet::set_texture(int texture){
@@ -45,7 +45,7 @@ Planet::~Planet(){
         delete[] m_mid;
     }
     delete m_sphere;
-    delete emitter;
+    //delete emitter;
 //    if (m_high){
 //        delete[] m_high;
 //    }
