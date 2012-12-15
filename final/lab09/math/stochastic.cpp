@@ -4,7 +4,7 @@ stochastic::stochastic()
 {
 }
 
-Vector4 stochastic::position(random_vals_t * rv){
+Vector4 stochastic::position(random_vals_t * rv, Vector3 cam_pos){
     int x=rand();
     x=x%20000;
     x=x-10000;

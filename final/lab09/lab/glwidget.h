@@ -59,6 +59,7 @@ protected slots:
 private:
     QTimer m_timer;
     QTime m_clock;
+    ParticleEmitter m_emitter;
     QList<int> keys;
     int m_prevTime;
     float m_prevFps, m_fps;

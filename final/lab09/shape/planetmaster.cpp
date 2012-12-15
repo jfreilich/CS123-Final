@@ -14,13 +14,13 @@ void PlanetMaster::remove_planet(int i){
     m_planets.removeAt(i);
 }
 
-void PlanetMaster::addPlanet() {
+void PlanetMaster::addPlanet(Vector3 cam_pos) {
 
 
    // TODO perturb triangles
     random_vals_t *rv;
-    Vector4 p=stochastic::position(rv);
-    Vector4 v=stochastic::velocity(rv)/500.0;
+    Vector4 p=stochastic::position(rv,cam_pos);
+    Vector4 v=stochastic::velocity(rv)/1000.0;
     int r=rand();
     r=r%101;
     double rd=r/100.0f;
@@ -61,7 +61,7 @@ void PlanetMaster::addPlanet() {
         texture++;
     }
     texture=7;
-    Planet* temp = new Planet(0 );
+    Planet* temp = new Planet();
 
     temp->set_velocity(v);
     temp->set_scale(getScaleMat(Vector4(s,s,s,1)));

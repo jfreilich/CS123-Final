@@ -1,7 +1,7 @@
 #include "planet.h"
 #include <cstring>
 
-Planet::Planet(GLUquadric* sphere)
+Planet::Planet()
 {
 
     m_trans=Matrix4x4::identity();
@@ -11,7 +11,6 @@ Planet::Planet(GLUquadric* sphere)
     m_axis=Matrix4x4::identity();
     m_orbit_rot=Matrix4x4::identity();
     m_total=Matrix4x4::identity();
-   // m_sphere=sphere;
     m_density=0.0;
     m_mass=0.0;
     m_radius=0;
@@ -37,15 +36,7 @@ Vector4 Planet::get_velocity(){
 }
 
 Planet::~Planet(){
-//    if (m_low){
-//        delete[] m_low;
-//    }
-
-   // delete m_sphere;
     delete emitter;
-//    if (m_high){
-//        delete[] m_high;
-//    }
 }
 double Planet::get_density(){
     return m_density;
@@ -131,9 +122,6 @@ void Planet::set_rot(Matrix4x4 rot){
     m_rot_velocity=rot;
 }
 
-//GLUquadric* Planet::get_sphere(){
-//    return m_sphere;
-//}
 
 void Planet::move(){
     m_trans *= m_velocity;

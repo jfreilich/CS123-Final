@@ -55,6 +55,8 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
 
     pause = true;
 
+    //m_emitter = ParticleEmitter(0);
+
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
 
@@ -193,10 +195,8 @@ void GLWidget::tick()
         int rando = rand();
         rando=rando%1000;
         if (rando<=50){
-            m_pms.addPlanet();
+            m_pms.addPlanet(m_camera.eye);
         }
-
-
     }
 }
 
@@ -438,8 +438,10 @@ void GLWidget::initializeResources()
 
     //load textures here
     m_pms = PlanetMaster();
-    m_pms.addPlanet();
-   m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();
+
+    m_pms.addPlanet(m_camera.eye);
+    m_pms.addPlanet(m_camera.eye);m_pms.addPlanet(m_camera.eye);m_pms.addPlanet(m_camera.eye);
+
     cout << "Loaded planet master..." << endl;
 
     m_skybox = ResourceLoader::loadSkybox();
@@ -465,12 +467,19 @@ void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
 
-    fileList.append(new QFile("stars/left.jpg"));
+    /*fileList.append(new QFile("stars/left.jpg"));
     fileList.append(new QFile("stars/front.jpg"));
     fileList.append(new QFile("stars/right.jpg"));
     fileList.append(new QFile("stars/back.jpg"));
     fileList.append(new QFile("stars/top.jpg"));
-    fileList.append(new QFile("stars/bottom.jpg"));
+    fileList.append(new QFile("stars/bottom.jpg"));*/
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+    fileList.append(new QFile("stars/starssmall.jpg"));
+
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -639,7 +648,14 @@ void GLWidget::renderScene()
     // Enable cube maps and draw the skybox
     glEnable(GL_TEXTURE_CUBE_MAP);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMap);
+
+    glPushMatrix();
+
+    glTranslatef(m_camera.eye.x*0.97,m_camera.eye.y*0.97,m_camera.eye.z*0.97);
+
     glCallList(m_skybox);
+
+    glPopMatrix();
 
     // Enable culling (back) faces for rendering the dragon
     glEnable(GL_CULL_FACE);
@@ -713,6 +729,10 @@ void GLWidget::renderScene()
         m_shaderPrograms["planetShader"]->release();
         glBindTexture(GL_TEXTURE_2D,0);
  }
+
+    //m_emitter.updateParticles();
+    //m_emitter.drawParticles();
+
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();
    // m_shaderPrograms["reflect"]->setUniformValue("CubeMap", GL_TEXTURE0);
@@ -894,6 +914,9 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Space) {
         pause = !pause;
     }
+    if (event->key() == Qt::Key_R) {
+        m_camera.eye = Vector3::zero();
+    }
 
     if (event->isAutoRepeat())
         return;
@@ -932,5 +955,5 @@ void GLWidget::paintText()
 
     // QGLWidget's renderText takes xy coordinates, a string, and a font
     renderText(10, 20, "FPS: " + QString::number((int) (m_prevFps)), m_font);
-    //renderText(10, 35, "S: Save screenshot", m_font);
+    renderText(10, 750, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
 }

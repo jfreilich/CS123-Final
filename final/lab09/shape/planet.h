@@ -14,7 +14,7 @@ using namespace std;
 class Planet
 {
 public:
-    Planet(GLUquadric* sphere );
+    Planet();
     virtual ~Planet();
     GLuint get_texture();
     double get_radius();

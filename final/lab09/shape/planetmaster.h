@@ -13,7 +13,7 @@ public:
     PlanetMaster();
     virtual ~PlanetMaster();
     void remove_planet(int i);
-    void addPlanet();
+    void addPlanet(Vector3 cam_pos);
     QList<Planet*> getPlanets();
 
 private:
