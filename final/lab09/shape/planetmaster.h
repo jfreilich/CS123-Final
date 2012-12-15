@@ -1,7 +1,7 @@
 #ifndef PLANETMASTER_H
 #define PLANETMASTER_H
 
-#define TEXTURES 5
+#define TEXTURES 16
 #include <QGLShaderProgram>
 #include "shape/planet.h"
 #include <QList>
@@ -18,7 +18,6 @@ public:
 
 private:
     QList<Planet*> m_planets;
-    Sphere* mid;
     GLuint* textures;
 };
 

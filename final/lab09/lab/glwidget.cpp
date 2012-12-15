@@ -44,6 +44,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     setMouseTracking(true);
     setCursor(Qt::BlankCursor);
 
+
     keys = QList<int>();
 
     m_camera.center = Vector3(0.f, 0.f, 0.f);
@@ -52,7 +53,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_camera.theta = M_PI * 1.5f, m_camera.phi = 0.2f;
     m_camera.fovy = 60.f;
 
-    pause = false;
+    pause = true;
 
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
@@ -88,55 +89,127 @@ void GLWidget::tick()
 
         QList<Planet*> planets = m_pms.getPlanets();
         int size = planets.size();
+        Planet *pI, *pJ;
+        Vector4 positionI,positionJ,difference,accelerationJ,accelerationI, fromItoJ, fromJtoI, velocityI, velocityJ;
+        double x,y,z;
+        double max=50000.0;
+        double C=4.0*M_PI/3.0;
+        double G=0.01;
+        double massI, massJ;
+        double rI, rJ, distance,total, newR, volume,distance2;
         for (int i=0;i<size;i++) {
-
-            Planet* p = planets.at(i);
-
-            p->move();
-            Matrix4x4 trans=p->get_trans();
-            float x,y,z;
-            x=fabs(trans.d);
-            y=fabs(trans.h);
-            z=trans.l;
-          //  printf("%i\t%f\t%f\t%f\n",size,x,y,z);
+            pI = planets.at(i);
+            pI->move();
+            positionI=pI->get_position();
+            x=fabs(positionI.x);
+            y=fabs(positionI.y);
+            z=positionI.z;
+            rI=pI->get_radius();
+            massI=pI->get_mass();
+            //printf("%f\t%f\t%f\n\n",v.x,v.y,v.z);
             fflush(stdout);
-            double max=300;
+            velocityI=pI->get_velocity();
             if (x>=max||y>=max||z<=-max){
                 m_pms.remove_planet(i);
                 planets.removeAt(i);
                 i--;
                 size--;
             }
+            else{
+                //if (collide)
+                for (int j=0;j<i;j++){
+                    pJ=planets.at(j);
+                    velocityJ=pJ->get_velocity();
+                    massJ=pJ->get_mass();
+                    positionJ=pJ->get_position();
+                    rJ=pJ->get_radius();
+                    total=rI+rJ;
+                    difference=positionJ-positionI;
+                    fromItoJ=difference;
+                    fromJtoI=-difference;
+                    fromJtoI.w=0;
+                    fromItoJ.w=0;
+                    fromJtoI.normalize();
+                    fromItoJ.normalize();
+                    distance=difference.getMagnitude();
+                    distance2=difference.getMagnitude2();
+                    if (distance<=total){
+                        volume=(rI*rI*rI+rJ*rJ*rJ);
+                        newR=pow(volume,1.0/3.0);
+                        if (rI>=rJ){
+    //                        p->set_radius(newR);
+    //                        m_pms.remove_planet(j);
+    //                        planets.removeAt(j);
+    //                        i--;
+    //                        j--;
+    //                        size--;
 
+                            if (rJ>5){
+                                pI->set_radius(rI+1.0);
+                                pJ->set_radius(rJ-4.0);
+                            }
+                            else{
+                                m_pms.remove_planet(j);
+                                planets.removeAt(j);
+                                i--;
+                                j--;
+                                size--;
+                            }
+
+                        }
+                        else {
+
+                            if (rI>5){
+                                pJ->set_radius(rJ+1.0);
+                                 pI->set_radius(rI-4.0);
+                            }
+                            else{
+                                m_pms.remove_planet(i);
+                                planets.removeAt(i);
+                                i--;
+                                size--;
+                                j=i;
+                            }
+    //                        p2->set_radius(newR);
+    //                        m_pms.remove_planet(i);
+    //                        planets.removeAt(i);
+    //                        i--;
+    //                        size--;
+    //                        break;
+                        }
+                    }
+                    else{
+                        //-r from M to m
+                        //r = from m to M
+                        accelerationJ=G*massI*fromJtoI/distance2;
+                        pJ->set_velocity(velocityJ+accelerationJ);
+                        accelerationI=G*massJ*fromItoJ/distance2;
+                        pI->set_velocity(velocityI+accelerationI);
+                    }
+
+                }
+            }
         }
-
-        int r = rand();
-        r=r%1000;
-        if (r<=10){
+        int rando = rand();
+        rando=rando%1000;
+        if (rando<=50){
             m_pms.addPlanet();
         }
+
+
     }
 }
 
 void GLWidget::handleKeys() {
 
     if (keys.contains(Qt::Key_W))
-        m_camera.move(Vector2(0,1),5);
+        m_camera.move(Vector2(0,1),100);
     if (keys.contains(Qt::Key_A))
-        m_camera.move(Vector2(-1,0),5);
+        m_camera.move(Vector2(-1,0),100);
     if (keys.contains(Qt::Key_S))
-        m_camera.move(Vector2(0,-1),5);
+        m_camera.move(Vector2(0,-1),100);
     if (keys.contains(Qt::Key_D))
-        m_camera.move(Vector2(1,0),5);
-
-<<<<<<< HEAD
-    int r = rand();
-    r=r%1000;
-    if (r<=10){
-        m_pms.addPlanet();
-    }
-=======
->>>>>>> b8264e642c17786c8e652039fd2d14da56f60650
+        m_camera.move(Vector2(1,0),100);
 }
 
 
@@ -186,7 +259,11 @@ GLuint GLWidget::loadTexture(const QString &filename)
  **/
 void GLWidget::initializeGL()
 {
-    m_textures=(GLuint *) malloc(10*sizeof(GLuint));
+    glClearColor(0,0,0,1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    cout << "here" << endl ;
+    m_textures=(GLuint *) malloc(TEXTURES*sizeof(GLuint));
+    m_texture_colors= (Vector4 *) malloc(TEXTURES*sizeof(Vector4));
     // Set up OpenGL
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_CULL_FACE);
@@ -198,33 +275,56 @@ void GLWidget::initializeGL()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glActiveTexture(GL_TEXTURE0);
-    GLuint t=this->loadTexture("textures/earth.png");
+    m_glu_sphere=gluNewQuadric();
+    GLuint t=this->loadTexture("textures/black.jpg");
     if (t==-1){
-        cout << "earth texture failed." << endl;
+        cout << "black texture failed." << endl;
     }
     else{
         m_textures[0]=t;
+        m_texture_colors[0]=Vector4(19.0/255.0,19.0/255.0,19.0/255.0,1.0);
     }
-    t=this->loadTexture("textures/desert");
-    if (t==-1){
-        cout << "desert texture failed." << endl;
-    }
-    else{
-        m_textures[1]=t;
-    }
+//    t=this->loadTexture("textures/earth3.png");
+//    if (t==-1){
+//        cout << "earth3 texture failed." << endl;
+//    }
+//    else{
+//        m_textures[1]=t;
+//        //m_texture_colors[1]=Vector4(112.0/255.0,112.0/255.0,112.0/255.0,1.0);
+//        m_texture_colors[1]=Vector4(139.0/255.0,139.0/255.0,139.0/255.0,1.0);
+//    }
     t=this->loadTexture("textures/cloud.jpg");
     if (t==-1){
         cout << "cloud texture failed." << endl;
     }
     else{
         m_textures[2]=t;
+        m_texture_colors[2]=Vector4(141.0/255.0,146.0/255.0,137.0/255.0,1.0);
     }
+    t=this->loadTexture("textures/earth.png");
+    if (t==-1){
+        cout << "earth texture failed." << endl;
+    }
+    else{
+        m_textures[8]=t;
+        m_texture_colors[8]=Vector4(72.0/255.0,85.0/255.0,115.0/255.0,1.0);
+
+
+    }
+
+
+
+
+
+
+
     t=this->loadTexture("textures/green.jpg");
     if (t==-1){
         cout << "green texture failed." << endl;
     }
     else{
         m_textures[3]=t;
+        m_texture_colors[3]=Vector4(69.0/255.0,115.0/255.0,113.0/255.0,1.0);
     }
     t=this->loadTexture("textures/jupiter.jpg");
     if (t==-1){
@@ -232,6 +332,89 @@ void GLWidget::initializeGL()
     }
     else{
         m_textures[4]=t;
+        m_texture_colors[4]=Vector4(201.0/255.0,150.0/255.0,109.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/sun.jpg");
+    if (t==-1){
+        cout << "sun texture failed." << endl;
+    }
+    else{
+        m_textures[5]=t;
+        m_texture_colors[5]=Vector4(240.0/255.0,72.0/255.0,3.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/moon.jpg");
+    if (t==-1){
+        cout << "moon texture failed." << endl;
+    }
+    else{
+        m_textures[6]=t;
+        m_texture_colors[6]=Vector4(139.0/255.0,139.0/255.0,139.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/moon2.jpg");
+    if (t==-1){
+        cout << "moon2 texture failed." << endl;
+    }
+    else{
+        m_textures[7]=t;
+        m_texture_colors[7]=Vector4(139.0/255.0,139.0/255.0,139.0/255.0,1.0);
+
+    }
+
+    t=this->loadTexture("textures/sea.png");
+    if (t==-1){
+        cout << "sea texture failed." << endl;
+    }
+    else{
+        m_textures[9]=t;
+        m_texture_colors[9]=Vector4(107.0/255.0,106.0/255.0,93.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/forest.png");
+    if (t==-1){
+        cout << "forest texture failed." << endl;
+    }
+    else{
+        m_textures[10]=t;
+        m_texture_colors[10]=Vector4(107.0/255.0,100.0/255.0,88.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/tundra.png");
+    if (t==-1){
+        cout << "tundra texture failed." << endl;
+    }
+    else{
+        m_textures[11]=t;
+        m_texture_colors[11]=Vector4(108.0/255.0,86.0/255.0,76.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/web.png");
+    if (t==-1){
+        cout << "web texture failed." << endl;
+    }
+    else{
+        m_textures[12]=t;
+        m_texture_colors[12]=Vector4(105.0/255.0,96.0/255.0,83.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/pluto.png");
+    if (t==-1){
+        cout << "pluto texture failed." << endl;
+    }
+    else{
+        m_textures[13]=t;
+        m_texture_colors[13]=Vector4(149.0/255.0,105.0/255.0,87.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/venus.png");
+    if (t==-1){
+        cout << "venus texture failed." << endl;
+    }
+    else{
+        m_textures[14]=t;
+        m_texture_colors[14]=Vector4(127.0/255.0,97.0/255.0,58.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/mercury.png");
+    if (t==-1){
+        cout << "mercury texture failed." << endl;
+    }
+    else{
+        m_textures[15]=t;
+        m_texture_colors[15]=Vector4(105.0/255.0,96.0/255.0,81.0/255.0,1.0);
     }
 
     // Load resources, including creating shader programs and framebuffer objects
@@ -256,7 +439,7 @@ void GLWidget::initializeResources()
     //load textures here
     m_pms = PlanetMaster();
     m_pms.addPlanet();
-   //m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();
+   m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();m_pms.addPlanet();
     cout << "Loaded planet master..." << endl;
 
     m_skybox = ResourceLoader::loadSkybox();
@@ -281,12 +464,13 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("stars/starssmall.jpg"));
-    fileList.append(new QFile("stars/starssmall.jpg"));
-    fileList.append(new QFile("stars/starssmall.jpg"));
-    fileList.append(new QFile("stars/starssmall.jpg"));
-    fileList.append(new QFile("stars/starssmall.jpg"));
-    fileList.append(new QFile("stars/starssmall.jpg"));
+
+    fileList.append(new QFile("stars/left.jpg"));
+    fileList.append(new QFile("stars/front.jpg"));
+    fileList.append(new QFile("stars/right.jpg"));
+    fileList.append(new QFile("stars/back.jpg"));
+    fileList.append(new QFile("stars/top.jpg"));
+    fileList.append(new QFile("stars/bottom.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -356,7 +540,7 @@ void GLWidget::applyPerspectiveCamera(float width, float height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(m_camera.fovy, ratio, 0.1f, 1000.f);
+    gluPerspective(m_camera.fovy, ratio, 0.1f, 500000.f);
 
     gluLookAt(m_camera.eye.x, m_camera.eye.y, m_camera.eye.z,
               m_camera.eye.x + m_camera.dir.x, m_camera.eye.y + m_camera.dir.y, m_camera.eye.z + m_camera.dir.z,
@@ -475,9 +659,6 @@ void GLWidget::renderScene()
     glEnable(GL_TEXTURE_2D);
     QList<Planet*> planets = m_pms.getPlanets();
     int size=planets.size();
-    triangle_t* tris;
-    triangle_t tri;
-    int numTriangles;
     glMatrixMode(GL_MODELVIEW);
 
     for (int j=0;j<size;j++) {
@@ -490,7 +671,7 @@ void GLWidget::renderScene()
 
         glPushMatrix();
         glLoadIdentity();
-        Matrix4x4 tot=planet->getTotalTrans();
+        Matrix4x4 tot=planet->get_total_trans();
         tot=tot.getTranspose();
         glMultMatrixd(tot.data);
 
@@ -511,24 +692,23 @@ void GLWidget::renderScene()
         /*particles*/
 
 
-        tris = planet->getMid(numTriangles);
 
-        double u,v,theta,psi,x,y,z;
-        int temp;
+
         glEnable(GL_TEXTURE_2D);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,m_textures[planet->getTexture()]);
+        glBindTexture(GL_TEXTURE_2D,m_textures[planet->get_texture()]);
         m_shaderPrograms["planetShader"]->bind();
         m_shaderPrograms["planetShader"]->setUniformValue("planet_texture", 0);
-        m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->getR().x,planet->getR().y,planet->getR().z));
-        m_shaderPrograms["planetShader"]->setUniformValue("colorG", QVector3D(planet->getG().x,planet->getG().y,planet->getG().z));
-        m_shaderPrograms["planetShader"]->setUniformValue("colorB", QVector3D(planet->getB().x,planet->getB().y,planet->getB().z));
+        m_shaderPrograms["planetShader"]->setUniformValue("average_color",QVector4D(m_texture_colors[planet->get_texture()].x,m_texture_colors[planet->get_texture()].y,m_texture_colors[planet->get_texture()].z,m_texture_colors[planet->get_texture()].w));
+        m_shaderPrograms["planetShader"]->setUniformValue("colorR", QVector3D(planet->get_r().x,planet->get_r().y,planet->get_r().z));
+        m_shaderPrograms["planetShader"]->setUniformValue("colorG", QVector3D(planet->get_g().x,planet->get_g().y,planet->get_g().z));
+        m_shaderPrograms["planetShader"]->setUniformValue("colorB", QVector3D(planet->get_b().x,planet->get_b().y,planet->get_b().z));
 
-        GLUquadricObj *sphere=planet->get_sphere();
+       // GLUquadricObj *sphere=planet->get_sphere();
 
-        gluQuadricNormals(sphere, GLU_SMOOTH);
-        gluQuadricTexture(sphere, GL_TRUE);
-        gluSphere(sphere,planet->get_radius(),100,100);
+        gluQuadricNormals(m_glu_sphere, GLU_SMOOTH);
+        gluQuadricTexture(m_glu_sphere, GL_TRUE);
+        gluSphere(m_glu_sphere,planet->get_radius(),100,100);
         glPopMatrix();
         m_shaderPrograms["planetShader"]->release();
         glBindTexture(GL_TEXTURE_2D,0);
@@ -541,7 +721,6 @@ void GLWidget::renderScene()
     //glCallList(m_dragon.idx);
  //   glPopMatrix();
 
-//    m_shaderPrograms["reflect"]->release();
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
@@ -707,7 +886,11 @@ void GLWidget::createBlurKernel(int radius, int width, int height,
  **/
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Escape) QApplication::quit();
+    if (event->key() == Qt::Key_Escape) {
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        QApplication::quit();
+    }
     if (event->key() == Qt::Key_Space) {
         pause = !pause;
     }

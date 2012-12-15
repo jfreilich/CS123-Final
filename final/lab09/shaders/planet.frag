@@ -1,8 +1,7 @@
 uniform sampler2D planet_texture;
-
 varying float height;
 varying float intensity;
-
+uniform vec4 average_color;
 
 /*vec4 itsownfunction(float regionMin, float regionMax, sampler2D regionTexture) {
     float regionRange = regionMax - regionMin;
