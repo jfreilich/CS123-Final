@@ -14,6 +14,49 @@ void PlanetMaster::remove_planet(int i){
     m_planets.removeAt(i);
 }
 
+void PlanetMaster::create_solar_system(){
+    Vector4 v,p;
+    double s,ra, rd, density,texture;
+    Matrix4x4 rot;
+    Planet* sun=new Planet();
+    s=64;
+    v=Vector4(0,0,0,0);
+    texture=15;
+    p=Vector4(0,0,0,0);
+    density=1.0;
+    Planet * temp=sun;
+    temp->set_velocity(v);
+    temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
+    temp->set_radius(s);
+    temp->set_trans(getTransMat(p));
+ //   temp->set_axis_angle(ra);
+    temp->set_density(density);
+ //   rot=getRotXMat(rd);
+  //  temp->set_rot(rot);
+    temp->calculate_composite_transformations();
+    temp->set_texture(texture);
+    m_planets.append(temp);
+    Planet* earth=new Planet();
+    temp=earth;
+    s=16;
+    texture=8;
+    p=Vector4(128,0,0,0);
+    v=Vector4(0,4.0,0,0);
+    temp->set_velocity(v);
+    temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
+    temp->set_radius(s);
+    temp->set_trans(getTransMat(p));
+ //   temp->set_axis_angle(ra);
+    temp->set_density(density);
+ //   rot=getRotXMat(rd);
+  //  temp->set_rot(rot);
+    temp->calculate_composite_transformations();
+    temp->set_texture(texture);
+    m_planets.append(temp);
+
+
+}
+
 void PlanetMaster::addPlanet(Vector3 cam_pos) {
 
 

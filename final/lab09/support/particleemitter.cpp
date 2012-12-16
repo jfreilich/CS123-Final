@@ -104,7 +104,7 @@ void ParticleEmitter::drawParticles(Matrix4x4 trans)
 
     glEnable(GL_BLEND);
 
-    glDepthMask(GL_FALSE);
+ //   glDepthMask(GL_FALSE);
 
     glBegin(GL_QUADS);
 
@@ -141,7 +141,7 @@ void ParticleEmitter::drawParticles(Matrix4x4 trans)
 
     }
 
-    glDepthMask(GL_TRUE);
+   // glDepthMask(GL_TRUE);
 
     glEnd();
 }
