@@ -10,9 +10,13 @@
 #include <QTimer>
 #include <QWheelEvent>
 #include "glm.h"
+#include "common.h"
+#include "CS123Algebra.h"
 
-using std::cout;
-using std::endl;
+#include <sstream>
+using namespace std;
+//::cout;
+//using std::endl;
 
 /*
  box sizing localization
@@ -57,8 +61,6 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
 
     pause = true;
 
-    //m_emitter = ParticleEmitter(0);
-
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
 
@@ -78,6 +80,8 @@ GLWidget::~GLWidget()
     for (int i=0;i<TEXTURES;i++){
        // glDeleteTextures(1,&(m_textures[i]));
     }
+
+    //delete m_emitters;
 }
 
 /**
@@ -97,7 +101,7 @@ void GLWidget::tick()
         Vector4 positionI,positionJ,difference,accelerationJ,accelerationI, fromItoJ, fromJtoI, velocityI, velocityJ;
         double x,y,z;
         double max=2048;
-        double C=4.0*M_PI/3.0;
+        //double C=4.0*M_PI/3.0;
         double G=0.05;
         double massI, massJ;
         double rI, rJ, distance,total, newR, volume,distance2;
@@ -275,7 +279,7 @@ void GLWidget::initializeGL()
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glActiveTexture(GL_TEXTURE0);
     m_glu_sphere=gluNewQuadric();
-    GLuint t;
+    int t;
     t=this->loadTexture("textures/cloud.jpg");
     if (t==-1){
         cout << "cloud texture failed." << endl;
@@ -399,6 +403,21 @@ void GLWidget::initializeGL()
         m_textures[15]=t;
         m_texture_colors[15]=Vector4(220.0/255.0,96.0/255.0,14.0/255.0,1.0);
     }
+
+
+    for (int i=0;i<8;i++) {
+        int za = (i>3) ? -1 : 1;
+        int zb = (i%2 == 0) ? -1 : 1;
+        int zc = (i%4 == 1 || i%4 == 3) ? -1 : 1;
+        m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),0.1f,1.0f,0.5f, 50));
+        Matrix4x4 a = Matrix4x4::identity();
+        a.d = za*SKYBOX_RADIUS;
+        a.h = zb*SKYBOX_RADIUS;
+        a.l = zc*SKYBOX_RADIUS;
+    }
+
+    glClear(GL_ACCUM_BUFFER_BIT);
+
 
     // Load resources, including creating shader programs and framebuffer objects
     initializeResources();
@@ -524,7 +543,8 @@ void GLWidget::applyOrthogonalCamera(float width, float height)
   @param width: the viewport width
   @param height: the viewport height
 **/
-static Vector3 fromAngles(float theta, float phi) { return Vector3(cosf(theta) * cosf(phi), sinf(phi), sinf(theta) * cosf(phi)); }
+//static Vector3 fromAngles(float theta, float phi) { return Vector3(cosf(theta) * cosf(phi), sinf(phi), sinf(theta) * cosf(phi)); }
+
 void GLWidget::applyPerspectiveCamera(float width, float height)
 {
     float ratio = ((float) width) / height;
@@ -548,8 +568,9 @@ void GLWidget::applyPerspectiveCamera(float width, float height)
  **/
 void GLWidget::paintGL()
 {
+
     // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
 
     // Update the fps
     int time = m_clock.elapsed();
@@ -562,6 +583,10 @@ void GLWidget::paintGL()
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
     renderScene();
+
+
+
+
     m_framebufferObjects["fbo_0"]->release();
 
     // Copy the rendered scene into framebuffer 1(m_textures[0]
@@ -578,6 +603,18 @@ void GLWidget::paintGL()
     renderTexturedQuad(width, height);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    //glDisable(GL_DEPTH);
+    //glEnable(GL_BLEND);
+
+    //glAccum(GL_MULT, .9f);
+
+    //glAccum(GL_ACCUM, 0.1f);
+
+    //glAccum(GL_RETURN, 1.0f);
+
+    //glFlush();
+    //swapBuffers();
 
     // TODO: Step 1 - use the brightpass shader to render bright areas
     // only to fbo_2
@@ -626,7 +663,7 @@ void GLWidget::paintGL()
 void GLWidget::renderScene()
 {
     // Enable depth testing
-   glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Enable cube maps and draw the skybox
@@ -654,8 +691,8 @@ void GLWidget::renderScene()
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
 
     glDisable(GL_TEXTURE_CUBE_MAP);
-  glEnable(GL_DEPTH_TEST);
- glClear(GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_TEXTURE_2D);
     QList<Planet*> planets = m_pms.getPlanets();
     int size=planets.size();
@@ -676,19 +713,19 @@ void GLWidget::renderScene()
         glMultMatrixd(tot.data);
 
         /*particles*/
-        glDisable(GL_DEPTH);
-        glEnable(GL_BLEND);
+        //glDisable(GL_DEPTH);
+        //glEnable(GL_BLEND);
 
         //planet->emitter->updateParticles();       //Move the particles
-        //planet->emitter->drawParticles();         //Draw the particles
+        //planet->emitter->drawParticles(planet->getTrans());         //Draw the particles
 
-        glAccum(GL_MULT, .9f);
+        //glAccum(GL_MULT, .9f);
 
-        glAccum(GL_ACCUM, 0.1f);
+        //glAccum(GL_ACCUM, 0.1f);
 //
-        glAccum(GL_RETURN, 1.0f);
+ //       glAccum(GL_RETURN, 1.0f);
 
-        glFlush();
+   //     glFlush();
         /*particles*/
 
 
@@ -714,8 +751,10 @@ void GLWidget::renderScene()
         glBindTexture(GL_TEXTURE_2D,0);
  }
 
-    //m_emitter.updateParticles();
-    //m_emitter.drawParticles();
+    /*for (int i=0;i<m_emitters.size();i++) {
+        m_emitters.at(i)->updateParticles();       //Move the particles
+        m_emitters.at(i)->drawParticles(m_emitterTrans.at(i));         //Draw the particles
+    }*/
 
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();
@@ -897,9 +936,16 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_Space) {
         pause = !pause;
+        return;
     }
     if (event->key() == Qt::Key_R) {
         m_camera.eye = Vector3::zero();
+        return;
+    }
+
+    if (event->key() == Qt::Key_L) {
+        // anything for key L here
+        return;
     }
 
     if (event->isAutoRepeat())
@@ -910,8 +956,8 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         keys.append(event->key());
     else if (down && event->type() == QEvent::KeyRelease)
         keys.removeAll(event->key());
-
 }
+
 void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
     if (event->isAutoRepeat())
@@ -931,13 +977,27 @@ void GLWidget::paintText()
     glColor3f(1.f, 1.f, 1.f);
 
     // Combine the previous and current framerate
-    if (m_fps >= 0 && m_fps < 1000)
+    if (m_fps >= 0.01 && m_fps < 1000)
     {
        m_prevFps *= 0.95f;
        m_prevFps += m_fps * 0.05f;
     }
 
+    if (m_prevFps < 0.1)
+        m_prevFps = 0.0f;
+
+    std::string s;
+    std::stringstream sendout;
+    sendout << "FPS: " << (int) m_prevFps;
+    s = sendout.str();
+
+
+
     // QGLWidget's renderText takes xy coordinates, a string, and a font
-    renderText(10, 20, "FPS: " + QString::number((int) (m_prevFps)), m_font);
-    renderText(10, 750, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
+    renderText(10, 20, QString(s.data()), m_font);
+    renderText(10, this->height() - 10, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
+}
+
+void GLWidget::adjustSize() {
+    repaint();
 }

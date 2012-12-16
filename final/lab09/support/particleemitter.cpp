@@ -1,11 +1,10 @@
 #include "particleemitter.h"
 
-ParticleEmitter::ParticleEmitter(GLuint textureId, float3 color, float3 velocity,
-                                 float3 force, float scale, float fuzziness, float speed,
+ParticleEmitter::ParticleEmitter(float3 color, float3 velocity,
+                                 float scale, float decay, float speed,
                                  unsigned maxParticles) :
-                    m_maxParticles(maxParticles), m_textureID(textureId), m_speed(speed),
-                    m_fuzziness(fuzziness), m_scale(scale), m_color(color), m_velocity(velocity),
-                    m_force(force)
+                    m_maxParticles(maxParticles), m_speed(speed),
+                    m_fuzziness(decay), m_scale(scale), m_color(color), m_velocity(velocity)
 {
     m_particles = new Particle[maxParticles];
     resetParticles();
@@ -37,19 +36,22 @@ void ParticleEmitter::resetParticle(unsigned i)
 
     m_particles[i].life = 2.0;
 
-    m_particles[i].decay = urand(0.0025,0.15);
+    m_particles[i].decay = urand(m_littleR,m_bigR);
 
     m_particles[i].color = m_color;
 
-    m_particles[i].force.x = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.x;
-    m_particles[i].force.y = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.y;
-    m_particles[i].force.z = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.z;
+    //m_particles[i].force.x = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.x;
+    //m_particles[i].force.y = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.y;
+    //m_particles[i].force.z = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.z;
 
-    m_particles[i].dir.x = urand((0 - m_fuzziness),m_fuzziness) + m_velocity.x;
-    m_particles[i].dir.y = urand((0 - m_fuzziness),m_fuzziness) + m_velocity.y;
-    m_particles[i].dir.z = urand((0 - m_fuzziness),m_fuzziness) + m_velocity.z;
+    m_particles[i].dir.x = urand((0 - m_velocity.x),m_velocity.x);
+    m_particles[i].dir.y = urand((0 - m_velocity.y),m_velocity.y);
+    m_particles[i].dir.z = urand((0 - m_velocity.z),m_velocity.z);
+}
 
-    //Continue filling out code here
+void ParticleEmitter::setRadius(float little, float big) {
+    m_littleR = little;
+    m_bigR = big;
 }
 
 /**
@@ -80,11 +82,10 @@ void ParticleEmitter::updateParticles()
 
         m_particles[i].pos += m_particles[i].dir*m_speed;
 
-        m_particles[i].dir += m_particles[i].force;
+        //m_particles[i].life -= m_particles[i].decay;
 
-        m_particles[i].life -= m_particles[i].decay;
-
-        if (m_particles[i].life < 0)
+        //if (m_particles[i].life < 0)
+        if (m_particles[i].pos.getDistance(float3::Zero()) > m_particles->decay)
             m_particles[i].active = false;
     }
 }
@@ -95,11 +96,11 @@ void ParticleEmitter::updateParticles()
   * Draws each particle as a small, texture-mapped square of side-length m_scale.
   * Each square should be in the X/Y plane at Z = the particle's position's Z-coordinate.
   */
-void ParticleEmitter::drawParticles()
+void ParticleEmitter::drawParticles(Matrix4x4 trans)
 {
-    glBindTexture(GL_TEXTURE_2D, m_textureID);
+    //glBindTexture(GL_TEXTURE_2D, m_textureID);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     glEnable(GL_BLEND);
 
@@ -113,19 +114,30 @@ void ParticleEmitter::drawParticles()
 
         glColor4f(m_particles[i].color.r,m_particles[i].color.g,m_particles[i].color.b,m_particles[i].life);
 
+        Vector4 pos = Vector4::zero();
+        pos.x = m_particles[i].pos.x;
+        pos.y = m_particles[i].pos.y;
+        pos.z = m_particles[i].pos.z;
+        pos.w = 0;
+        pos = trans * pos;
 
-        glTexCoord2f(0,0);
+        glVertex3f(pos.x-scale,pos.y-scale,pos.z);
 
-        glVertex3f(m_particles[i].pos.x-scale,m_particles[i].pos.y-scale,m_particles[i].pos.z);
-        glTexCoord2f(1,0);
+        glVertex3f(pos.x-scale,pos.y+scale,pos.z);
 
-        glVertex3f(m_particles[i].pos.x-scale,m_particles[i].pos.y+scale,m_particles[i].pos.z);
-        glTexCoord2f(1,1);
+        glVertex3f(pos.x+scale,pos.y+scale,pos.z);
 
-        glVertex3f(m_particles[i].pos.x+scale,m_particles[i].pos.y+scale,m_particles[i].pos.z);
-        glTexCoord2f(0,1);
+        glVertex3f(pos.x+scale,pos.y-scale,pos.z);
 
-        glVertex3f(m_particles[i].pos.x+scale,m_particles[i].pos.y-scale,m_particles[i].pos.z);
+
+        glVertex3f(pos.x-scale,pos.y+scale,pos.z);
+
+        glVertex3f(pos.x-scale,pos.y-scale,pos.z);
+
+        glVertex3f(pos.x+scale,pos.y+scale,pos.z);
+
+        glVertex3f(pos.x+scale,pos.y-scale,pos.z);
+
 
     }
 

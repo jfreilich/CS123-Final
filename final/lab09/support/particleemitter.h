@@ -1,8 +1,9 @@
 #ifndef PARTICLEEMITTER_H
 #define PARTICLEEMITTER_H
 
-#include "common.h"
+#include "CS123Algebra.h"
 #include <QtOpenGL>
+#include "common.h"
 
 class ParticleEmitter
 {
@@ -52,14 +53,12 @@ class ParticleEmitter
 
 
 public:
-    ParticleEmitter(GLuint textureId = 0,
-                    float3 color = float3(1.0f, 0.5f, 0.2f),
+    ParticleEmitter(float3 color = float3(1.0f, 1.0f, 1.0f),
                     float3 velocity = float3(0.0f, 0.0001f, 0.0f),
-                    float3 force = float3(0.0f, 0.0001f, 0.0f),
-                    float scale = .5f,
+                    float scale = 2.0f,
                     float fuzziness = 50.0f,
                     float speed = 50.0f / 10000.0f,
-                    unsigned maxParticles = 20);
+                    unsigned maxParticles = 1000);
 
     ~ParticleEmitter();
 
@@ -69,7 +68,7 @@ public:
       * Draws each particle as a small, texture-mapped square of side-length m_scale.
       * Each square should be in the X/Y plane at Z = the particle's position's Z-coordinate.
       */
-    void drawParticles();
+    void drawParticles(Matrix4x4 trans = Matrix4x4::identity());
     /**
       * You need to fill this in.
       *
@@ -77,6 +76,9 @@ public:
       * position, direction, force, color, life, and decay of the particle.
       */
     void resetParticle(unsigned i);
+
+    void setRadius(float little, float big);
+
     /**
       * Resets all particles in this emitter to their initial states
       */
@@ -133,6 +135,9 @@ protected:
     float3 m_velocity;
     /** The force vector applied to every particle emitted into the scene */
     float3 m_force;
+
+    float m_littleR;
+    float m_bigR;
 };
 
 

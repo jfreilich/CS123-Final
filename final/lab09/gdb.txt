@@ -10,4 +10,15 @@ $1 = (const QString::Null *) 0xb73b0704
 $1 = (const QString::Null *) 0xb73af704
 $1 = (const QString::Null *) 0xb73af704
 $1 = (const QString::Null *) 0xb73af704
+<<<<<<< HEAD
+$1 = (const QString::Null *) 0xb73af704
+$1 = (const QString::Null *) 0xb73af704
+$1 = (const QString::Null *) 0xb73af704
+$1 = (const QString::Null *) 0xb73af704
+$1 = (const QString::Null *) 0xb73af704
+$1 = (const QString::Null *) 0xb73af704
+$1 = (const QString::Null *) 0xb73af704
+=======
 >>>>>>> a681f421eff811173ee19b492dedef95d2d2769f
+>>>>>>> 4a0ac57a1bd673200c9bc7e35f5ffea495eca7e8
+$1 = (const QString::Null *) 0xb73af704

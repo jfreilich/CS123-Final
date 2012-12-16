@@ -11,12 +11,14 @@ Planet::Planet()
     m_axis=Matrix4x4::identity();
     m_orbit_rot=Matrix4x4::identity();
     m_total=Matrix4x4::identity();
+
     m_density=0.0;
     m_mass=0.0;
     m_radius=0;
     m_radius3=0;
     m_position=Vector4(0.0,0.0,0.0,1.0);
-    emitter = new ParticleEmitter(2);
+
+    emitter = new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(1.0f,1.0f,0.0f),0.1f,0.01f,0.5f, 1000);
 
 }
 void Planet::set_texture(int texture){
@@ -62,11 +64,15 @@ void Planet::set_radius(double r){
     m_radius=r;
     m_radius3=r*r*r;
     m_mass=m_density*m_radius3;
+
+    emitter->setRadius(m_radius,m_radius*1.5);
 }
 void Planet::set_radius3(double r3){
     m_radius3=r3;
     m_radius=pow(r3,1.0/3.0);
     m_mass=m_density*r3;
+
+    emitter->setRadius(m_radius,m_radius*1.5);
 }
 void Planet::set_axis_angle(double angle){
     m_axis_angle=angle;
@@ -104,6 +110,7 @@ void Planet::set_trans(Matrix4x4 trans){
     m_trans=trans;
     m_position=Vector4(trans.d,trans.h,trans.l,1.0);
 }
+
 
 Matrix4x4 Planet::get_total_trans(){
     return m_total;
