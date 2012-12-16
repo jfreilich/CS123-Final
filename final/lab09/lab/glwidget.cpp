@@ -78,7 +78,7 @@ GLWidget::~GLWidget()
     //glmDelete(m_dragon.model);
 
     for (int i=0;i<TEXTURES;i++){
-       // glDeleteTextures(1,&(m_textures[i]));
+        glDeleteTextures(1,&(m_textures[i]));
     }
 
     //delete m_emitters;
