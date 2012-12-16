@@ -10,7 +10,8 @@
 #include <QTimer>
 #include <QWheelEvent>
 #include "glm.h"
-
+#include "common.h"
+#include "CS123Algebra.h"
 
 #include <sstream>
 using namespace std;
@@ -58,7 +59,6 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
 
     pause = true;
 
-    //m_emitter = ParticleEmitter(0);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
 
@@ -79,7 +79,7 @@ GLWidget::~GLWidget()
        // glDeleteTextures(1,&(m_textures[i]));
     }
 
-    delete m_emitter;
+    //delete m_emitters;
 }
 
 /**
@@ -99,7 +99,7 @@ void GLWidget::tick()
         Vector4 positionI,positionJ,difference,accelerationJ,accelerationI, fromItoJ, fromJtoI, velocityI, velocityJ;
         double x,y,z;
         double max=2048;
-        double C=4.0*M_PI/3.0;
+        //double C=4.0*M_PI/3.0;
         double G=0.05;
         double massI, massJ;
         double rI, rJ, distance,total, newR, volume,distance2;
@@ -277,7 +277,7 @@ void GLWidget::initializeGL()
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glActiveTexture(GL_TEXTURE0);
     m_glu_sphere=gluNewQuadric();
-    GLuint t;
+    int t;
     t=this->loadTexture("textures/cloud.jpg");
     if (t==-1){
         cout << "cloud texture failed." << endl;
@@ -402,7 +402,17 @@ void GLWidget::initializeGL()
         m_texture_colors[15]=Vector4(220.0/255.0,96.0/255.0,14.0/255.0,1.0);
     }
 
-    m_emitter = new ParticleEmitter(2);
+
+    for (int i=0;i<8;i++) {
+        int za = (i>3) ? -1 : 1;
+        int zb = (i%2 == 0) ? -1 : 1;
+        int zc = (i%4 == 1 || i%4 == 3) ? -1 : 1;
+        m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),0.1f,1.0f,0.5f, 50));
+        Matrix4x4 a = Matrix4x4::identity();
+        a.d = za*SKYBOX_RADIUS;
+        a.h = zb*SKYBOX_RADIUS;
+        a.l = zc*SKYBOX_RADIUS;
+    }
 
     glClear(GL_ACCUM_BUFFER_BIT);
 
@@ -572,8 +582,8 @@ void GLWidget::paintGL()
     applyPerspectiveCamera(width, height);
     renderScene();
 
-    //m_emitter->updateParticles();       //Move the particles
-    //m_emitter->drawParticles();         //Draw the particles
+
+
 
     m_framebufferObjects["fbo_0"]->release();
 
@@ -739,8 +749,10 @@ void GLWidget::renderScene()
         glBindTexture(GL_TEXTURE_2D,0);
  }
 
-    //m_emitter->updateParticles();
-    //m_emitter->drawParticles();
+    /*for (int i=0;i<m_emitters.size();i++) {
+        m_emitters.at(i)->updateParticles();       //Move the particles
+        m_emitters.at(i)->drawParticles(m_emitterTrans.at(i));         //Draw the particles
+    }*/
 
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();
@@ -922,9 +934,16 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_Space) {
         pause = !pause;
+        return;
     }
     if (event->key() == Qt::Key_R) {
         m_camera.eye = Vector3::zero();
+        return;
+    }
+
+    if (event->key() == Qt::Key_L) {
+        // anything for key L here
+        return;
     }
 
     if (event->isAutoRepeat())
@@ -935,8 +954,8 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         keys.append(event->key());
     else if (down && event->type() == QEvent::KeyRelease)
         keys.removeAll(event->key());
-
 }
+
 void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
     if (event->isAutoRepeat())
@@ -970,7 +989,13 @@ void GLWidget::paintText()
     sendout << "FPS: " << (int) m_prevFps;
     s = sendout.str();
 
+
+
     // QGLWidget's renderText takes xy coordinates, a string, and a font
     renderText(10, 20, QString(s.data()), m_font);
-    renderText(10, 750, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
+    renderText(10, this->height() - 10, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
+}
+
+void GLWidget::adjustSize() {
+    repaint();
 }

@@ -64,13 +64,15 @@ void Planet::set_radius(double r){
     m_radius=r;
     m_radius3=r*r*r;
     m_mass=m_density*m_radius3;
+
+    emitter->setRadius(m_radius,m_radius*1.5);
 }
 void Planet::set_radius3(double r3){
     m_radius3=r3;
     m_radius=pow(r3,1.0/3.0);
     m_mass=m_density*r3;
 
-    emitter->setRadius(r,r*1.5);
+    emitter->setRadius(m_radius,m_radius*1.5);
 }
 void Planet::set_axis_angle(double angle){
     m_axis_angle=angle;

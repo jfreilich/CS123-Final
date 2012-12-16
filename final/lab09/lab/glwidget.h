@@ -14,6 +14,7 @@
 class QGLShaderProgram;
 class QGLFramebufferObject;
 
+#define SKYBOX_RADIUS 768
 
 class GLWidget : public QGLWidget
 {
@@ -51,6 +52,8 @@ protected:
     GLuint LoadTextureRAW( const char * filename, int wrap );
     GLuint loadTexture(const QString &filename);
 
+    void adjustSize();
+
     void handleKeys();
 
 protected slots:
@@ -59,7 +62,10 @@ protected slots:
 private:
     QTimer m_timer;
     QTime m_clock;
-    ParticleEmitter *m_emitter;
+
+    QList<ParticleEmitter*> m_emitters;
+    QList<Matrix4x4> m_emitterTrans;
+
     QList<int> keys;
     int m_prevTime;
     float m_prevFps, m_fps;

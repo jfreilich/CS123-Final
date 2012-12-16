@@ -1,11 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'glwidget.h'
 **
-<<<<<<< HEAD
-** Created: Fri Dec 14 22:58:18 2012
-=======
-** Created: Sat Dec 15 21:01:24 2012
->>>>>>> 4a0ac57a1bd673200c9bc7e35f5ffea495eca7e8
+** Created: Sun Dec 16 16:16:24 2012
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.6.3)
 **
 ** WARNING! All changes made in this file will be lost!

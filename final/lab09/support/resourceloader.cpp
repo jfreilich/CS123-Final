@@ -4,7 +4,7 @@
 #include <QList>
 #include <QString>
 #include "glm.h"
-
+#include "glwidget.h"
 
 /**
   Loads the cube map into video memory.
@@ -69,7 +69,7 @@ GLuint ResourceLoader::loadSkybox()
 
     // Be glad we wrote this for you...ugh.
     glBegin(GL_QUADS);
-    float extent = 768.0f;
+    float extent = SKYBOX_RADIUS;
     glTexCoord3f( 1.0f, -1.0f, -1.0f); glVertex3f( extent, -extent, -extent);
     glTexCoord3f(-1.0f, -1.0f, -1.0f); glVertex3f(-extent, -extent, -extent);
     glTexCoord3f(-1.0f,  1.0f, -1.0f); glVertex3f(-extent,  extent, -extent);
