@@ -44,9 +44,9 @@ void ParticleEmitter::resetParticle(unsigned i)
     //m_particles[i].force.y = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.y;
     //m_particles[i].force.z = urand((0 - m_fuzziness)*0.01f,m_fuzziness*0.01f) + m_force.z;
 
-    m_particles[i].dir.x = urand((0 - m_velocity.x),m_velocity.x);
-    m_particles[i].dir.y = urand((0 - m_velocity.y),m_velocity.y);
-    m_particles[i].dir.z = urand((0 - m_velocity.z),m_velocity.z);
+    m_particles[i].dir.x = urand(0,m_velocity.x);//urand((0 - m_velocity.x),m_velocity.x);
+    m_particles[i].dir.y = urand(0,m_velocity.y);//urand((0 - m_velocity.y),m_velocity.y);
+    m_particles[i].dir.z = urand(0,m_velocity.z);//urand((0 - m_velocity.z),m_velocity.z);
 }
 
 void ParticleEmitter::setRadius(float little, float big) {
@@ -104,7 +104,6 @@ void ParticleEmitter::drawParticles(Matrix4x4 trans)
 
     glEnable(GL_BLEND);
 
- //   glDepthMask(GL_FALSE);
 
     glBegin(GL_QUADS);
 
@@ -130,18 +129,17 @@ void ParticleEmitter::drawParticles(Matrix4x4 trans)
         glVertex3f(pos.x+scale,pos.y-scale,pos.z);
 
 
+        glVertex3f(pos.x+scale,pos.y-scale,pos.z);
+
+        glVertex3f(pos.x+scale,pos.y+scale,pos.z);
+
         glVertex3f(pos.x-scale,pos.y+scale,pos.z);
 
         glVertex3f(pos.x-scale,pos.y-scale,pos.z);
 
-        glVertex3f(pos.x+scale,pos.y+scale,pos.z);
-
-        glVertex3f(pos.x+scale,pos.y-scale,pos.z);
-
 
     }
 
-   // glDepthMask(GL_TRUE);
 
     glEnd();
 }
