@@ -20,7 +20,7 @@ void PlanetMaster::addPlanet(Vector3 cam_pos) {
    // TODO perturb triangles
     random_vals_t *rv;
     Vector4 p=stochastic::position(rv,cam_pos);
-    Vector4 v=stochastic::velocity(rv)/1000.0;
+    Vector4 v=stochastic::velocity(rv)/32.0;
     int r=rand();
     r=r%101;
     double rd=r/100.0f;
@@ -34,33 +34,23 @@ void PlanetMaster::addPlanet(Vector3 cam_pos) {
     double orbitd=orbit/100.0f;
     orbitd*=M_PI/16.0;
     int s=rand();
-    s=s%6;
-    s*=100;
-    s+=500;
+    s=s%32;
+    s+=16;
+
 
 
 
     double density=(rand()%1000)/999.0;
     density=1.0;
-//    if (s>=45){
-//        s*=3;
-//    }
 
     int texture=rand();
-    texture=texture%TEXTURES;
-//    if (texture<5){
-//        texture=0;
+    texture=texture%14;
+    texture+=2;
+
+//    if (texture==1||texture==2){
+//        texture=3;
 //    }
-//    else if(texture<10){
-//        texture=1;
-//    }
-//    else{
-//        texture=2;
-//    }
-    if (texture==1){
-        texture++;
-    }
-    texture=7;
+
     Planet* temp = new Planet();
 
     temp->set_velocity(v);

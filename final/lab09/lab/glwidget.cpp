@@ -94,9 +94,9 @@ void GLWidget::tick()
         Planet *pI, *pJ;
         Vector4 positionI,positionJ,difference,accelerationJ,accelerationI, fromItoJ, fromJtoI, velocityI, velocityJ;
         double x,y,z;
-        double max=50000.0;
+        double max=2048;
         double C=4.0*M_PI/3.0;
-        double G=0.01;
+        double G=0.05;
         double massI, massJ;
         double rI, rJ, distance,total, newR, volume,distance2;
         for (int i=0;i<size;i++) {
@@ -146,9 +146,9 @@ void GLWidget::tick()
     //                        j--;
     //                        size--;
 
-                            if (rJ>5){
+                            if (rJ>3){
                                 pI->set_radius(rI+1.0);
-                                pJ->set_radius(rJ-4.0);
+                                pJ->set_radius(rJ-2.0);
                             }
                             else{
                                 m_pms.remove_planet(j);
@@ -161,9 +161,9 @@ void GLWidget::tick()
                         }
                         else {
 
-                            if (rI>5){
+                            if (rI>3){
                                 pJ->set_radius(rJ+1.0);
-                                 pI->set_radius(rI-4.0);
+                                 pI->set_radius(rI-2.0);
                             }
                             else{
                                 m_pms.remove_planet(i);
@@ -203,13 +203,13 @@ void GLWidget::tick()
 void GLWidget::handleKeys() {
 
     if (keys.contains(Qt::Key_W))
-        m_camera.move(Vector2(0,1),100);
+        m_camera.move(Vector2(0,1),10);
     if (keys.contains(Qt::Key_A))
-        m_camera.move(Vector2(-1,0),100);
+        m_camera.move(Vector2(-1,0),10);
     if (keys.contains(Qt::Key_S))
-        m_camera.move(Vector2(0,-1),100);
+        m_camera.move(Vector2(0,-1),10);
     if (keys.contains(Qt::Key_D))
-        m_camera.move(Vector2(1,0),100);
+        m_camera.move(Vector2(1,0),10);
 }
 
 
@@ -231,7 +231,6 @@ GLuint GLWidget::loadTexture(const QString &filename)
     // Generate a new OpenGL texture ID to put our image into
     GLuint id = 0;
     glGenTextures(1, &id);
-
     // Make the texture we just created the new active texture
     glBindTexture(GL_TEXTURE_2D, id);
 
@@ -247,7 +246,6 @@ GLuint GLWidget::loadTexture(const QString &filename)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-
     return id;
 }
 
@@ -261,7 +259,6 @@ void GLWidget::initializeGL()
 {
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    cout << "here" << endl ;
     m_textures=(GLuint *) malloc(TEXTURES*sizeof(GLuint));
     m_texture_colors= (Vector4 *) malloc(TEXTURES*sizeof(Vector4));
     // Set up OpenGL
@@ -276,23 +273,7 @@ void GLWidget::initializeGL()
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glActiveTexture(GL_TEXTURE0);
     m_glu_sphere=gluNewQuadric();
-    GLuint t=this->loadTexture("textures/black.jpg");
-    if (t==-1){
-        cout << "black texture failed." << endl;
-    }
-    else{
-        m_textures[0]=t;
-        m_texture_colors[0]=Vector4(19.0/255.0,19.0/255.0,19.0/255.0,1.0);
-    }
-//    t=this->loadTexture("textures/earth3.png");
-//    if (t==-1){
-//        cout << "earth3 texture failed." << endl;
-//    }
-//    else{
-//        m_textures[1]=t;
-//        //m_texture_colors[1]=Vector4(112.0/255.0,112.0/255.0,112.0/255.0,1.0);
-//        m_texture_colors[1]=Vector4(139.0/255.0,139.0/255.0,139.0/255.0,1.0);
-//    }
+    GLuint t;
     t=this->loadTexture("textures/cloud.jpg");
     if (t==-1){
         cout << "cloud texture failed." << endl;
@@ -301,46 +282,37 @@ void GLWidget::initializeGL()
         m_textures[2]=t;
         m_texture_colors[2]=Vector4(141.0/255.0,146.0/255.0,137.0/255.0,1.0);
     }
-    t=this->loadTexture("textures/earth.png");
+    t=this->loadTexture("textures/other1.jpg");
     if (t==-1){
-        cout << "earth texture failed." << endl;
+        cout << "other1 texture failed." << endl;
     }
     else{
-        m_textures[8]=t;
-        m_texture_colors[8]=Vector4(72.0/255.0,85.0/255.0,115.0/255.0,1.0);
-
-
-    }
-
-
-
-
-
-
-
-    t=this->loadTexture("textures/green.jpg");
-    if (t==-1){
-        cout << "green texture failed." << endl;
-    }
-    else{
-        m_textures[3]=t;
-        m_texture_colors[3]=Vector4(69.0/255.0,115.0/255.0,113.0/255.0,1.0);
-    }
-    t=this->loadTexture("textures/jupiter.jpg");
-    if (t==-1){
-        cout << "jupiter texture failed." << endl;
-    }
-    else{
-        m_textures[4]=t;
-        m_texture_colors[4]=Vector4(201.0/255.0,150.0/255.0,109.0/255.0,1.0);
+        m_textures[1]=t;
+        m_texture_colors[1]=Vector4(141.0/255.0,146.0/255.0,137.0/255.0,1.0);
     }
     t=this->loadTexture("textures/sun.jpg");
     if (t==-1){
         cout << "sun texture failed." << endl;
     }
     else{
+        m_textures[3]=t;
+        m_texture_colors[3]=Vector4(240.0/255.0,72.0/255.0,3.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/black.jpg");
+    if (t==-1){
+        cout << "black texture failed." << endl;
+    }
+    else{
+        m_textures[4]=t;
+        m_texture_colors[4]=Vector4(19.0/255.0,19.0/255.0,19.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/pluto.jpg");
+    if (t==-1){
+        cout << "pluto texture failed." << endl;
+    }
+    else{
         m_textures[5]=t;
-        m_texture_colors[5]=Vector4(240.0/255.0,72.0/255.0,3.0/255.0,1.0);
+        m_texture_colors[5]=Vector4(137.0/255.0,146.0/255.0,155.0/255.0,1.0);
     }
     t=this->loadTexture("textures/moon.jpg");
     if (t==-1){
@@ -357,64 +329,73 @@ void GLWidget::initializeGL()
     else{
         m_textures[7]=t;
         m_texture_colors[7]=Vector4(139.0/255.0,139.0/255.0,139.0/255.0,1.0);
-
     }
-
-    t=this->loadTexture("textures/sea.png");
-    if (t==-1){
-        cout << "sea texture failed." << endl;
-    }
-    else{
-        m_textures[9]=t;
-        m_texture_colors[9]=Vector4(107.0/255.0,106.0/255.0,93.0/255.0,1.0);
-    }
-    t=this->loadTexture("textures/forest.png");
-    if (t==-1){
-        cout << "forest texture failed." << endl;
-    }
-    else{
-        m_textures[10]=t;
-        m_texture_colors[10]=Vector4(107.0/255.0,100.0/255.0,88.0/255.0,1.0);
-    }
-    t=this->loadTexture("textures/tundra.png");
-    if (t==-1){
-        cout << "tundra texture failed." << endl;
-    }
-    else{
-        m_textures[11]=t;
-        m_texture_colors[11]=Vector4(108.0/255.0,86.0/255.0,76.0/255.0,1.0);
-    }
-    t=this->loadTexture("textures/web.png");
-    if (t==-1){
-        cout << "web texture failed." << endl;
-    }
-    else{
-        m_textures[12]=t;
-        m_texture_colors[12]=Vector4(105.0/255.0,96.0/255.0,83.0/255.0,1.0);
-    }
-    t=this->loadTexture("textures/pluto.png");
-    if (t==-1){
-        cout << "pluto texture failed." << endl;
-    }
-    else{
-        m_textures[13]=t;
-        m_texture_colors[13]=Vector4(149.0/255.0,105.0/255.0,87.0/255.0,1.0);
-    }
-    t=this->loadTexture("textures/venus.png");
-    if (t==-1){
-        cout << "venus texture failed." << endl;
-    }
-    else{
-        m_textures[14]=t;
-        m_texture_colors[14]=Vector4(127.0/255.0,97.0/255.0,58.0/255.0,1.0);
-    }
-    t=this->loadTexture("textures/mercury.png");
+    t=this->loadTexture("textures/mercury.jpg");
     if (t==-1){
         cout << "mercury texture failed." << endl;
     }
     else{
+        m_textures[8]=t;
+        m_texture_colors[8]=Vector4(159.0/255.0,112.0/255.0,52.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/venus.jpg");
+    if (t==-1){
+        cout << "venus texture failed." << endl;
+    }
+    else{
+        m_textures[9]=t;
+        m_texture_colors[9]=Vector4(177.0/255.0,89.0/255.0,16.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/earthpng.png");
+    if (t==-1){
+        cout << "earth texture failed." << endl;
+    }
+    else{
+        m_textures[10]=t;
+        m_texture_colors[10]=Vector4(72.0/255.0,85.0/255.0,115.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/neptune.jpg");
+    if (t==-1){
+        cout << "neptune texture failed." << endl;
+    }
+    else{
+        m_textures[11]=t;
+        m_texture_colors[11]=Vector4(30.0/255.0,81.0/255.0,146.0/255.0,1.0);
+    }
+    t=this->loadTexture("textures/uranus.jpg");
+    if (t==-1){
+        cout << "uranus texture failed." << endl;
+    }
+    else{
+        m_textures[12]=t;
+        m_texture_colors[12]=Vector4(106.0/255.0,175.0/255.0,202.0/255.0,1.0);
+    }
+
+    t=this->loadTexture("textures/saturnpng.png");
+    if (t==-1){
+        cout << "saturn texture failed." << endl;
+    }
+    else{
+        m_textures[13]=t;
+        m_texture_colors[13]=Vector4(206.0/255.0,171.0/255.0,134.0/255.0,1.0);
+    }
+
+    t=this->loadTexture("textures/jupiter.jpg");
+    if (t==-1){
+        cout << "jupiter texture failed." << endl;
+    }
+    else{
+        m_textures[14]=t;
+        m_texture_colors[14]=Vector4(154.0/255.0,151.0/255.0,144.0/255.0,1.0);
+    }
+
+    t=this->loadTexture("textures/sunpng.png");
+    if (t==-1){
+        cout << "sun texture failed." << endl;
+    }
+    else{
         m_textures[15]=t;
-        m_texture_colors[15]=Vector4(105.0/255.0,96.0/255.0,81.0/255.0,1.0);
+        m_texture_colors[15]=Vector4(220.0/255.0,96.0/255.0,14.0/255.0,1.0);
     }
 
     // Load resources, including creating shader programs and framebuffer objects
@@ -481,6 +462,7 @@ void GLWidget::loadCubeMap()
     fileList.append(new QFile("stars/starssmall.jpg"));
 
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
+    cout << m_cubeMap << endl;
 }
 
 /**
@@ -549,7 +531,7 @@ void GLWidget::applyPerspectiveCamera(float width, float height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(m_camera.fovy, ratio, 0.1f, 500000.f);
+    gluPerspective(m_camera.fovy, ratio, 0.01f, 4096.f);
 
     gluLookAt(m_camera.eye.x, m_camera.eye.y, m_camera.eye.z,
               m_camera.eye.x + m_camera.dir.x, m_camera.eye.y + m_camera.dir.y, m_camera.eye.z + m_camera.dir.z,
