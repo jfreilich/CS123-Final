@@ -11,8 +11,11 @@
 #include <QWheelEvent>
 #include "glm.h"
 
-using std::cout;
-using std::endl;
+
+#include <sstream>
+using namespace std;
+//::cout;
+//using std::endl;
 
 /*
  box sizing localization
@@ -53,9 +56,6 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_camera.fovy = 60.f;
 
     pause = false;
-
-    //m_emitter = ParticleEmitter(0);
-
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
 
@@ -75,6 +75,8 @@ GLWidget::~GLWidget()
     for (int i=0;i<TEXTURES;i++){
        // glDeleteTextures(1,&(m_textures[i]));
     }
+
+    delete m_emitter;
 }
 
 /**
@@ -229,6 +231,11 @@ void GLWidget::initializeGL()
         m_textures[4]=t;
     }
 
+    m_emitter = new ParticleEmitter(2);
+
+    glClear(GL_ACCUM_BUFFER_BIT);
+
+
     // Load resources, including creating shader programs and framebuffer objects
     initializeResources();
     // Start the drawing timer
@@ -366,8 +373,9 @@ void GLWidget::applyPerspectiveCamera(float width, float height)
  **/
 void GLWidget::paintGL()
 {
+
     // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
 
     // Update the fps
     int time = m_clock.elapsed();
@@ -380,6 +388,10 @@ void GLWidget::paintGL()
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
     renderScene();
+
+    //m_emitter->updateParticles();       //Move the particles
+    //m_emitter->drawParticles();         //Draw the particles
+
     m_framebufferObjects["fbo_0"]->release();
 
     // Copy the rendered scene into framebuffer 1(m_textures[0]
@@ -396,6 +408,18 @@ void GLWidget::paintGL()
     renderTexturedQuad(width, height);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    //glDisable(GL_DEPTH);
+    //glEnable(GL_BLEND);
+
+    //glAccum(GL_MULT, .9f);
+
+    //glAccum(GL_ACCUM, 0.1f);
+
+    //glAccum(GL_RETURN, 1.0f);
+
+    //glFlush();
+    //swapBuffers();
 
     // TODO: Step 1 - use the brightpass shader to render bright areas
     // only to fbo_2
@@ -444,7 +468,7 @@ void GLWidget::paintGL()
 void GLWidget::renderScene()
 {
     // Enable depth testing
-   glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Enable cube maps and draw the skybox
@@ -472,8 +496,8 @@ void GLWidget::renderScene()
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
 
     glDisable(GL_TEXTURE_CUBE_MAP);
-  glEnable(GL_DEPTH_TEST);
- glClear(GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_TEXTURE_2D);
     QList<Planet*> planets = m_pms.getPlanets();
     int size=planets.size();
@@ -497,19 +521,19 @@ void GLWidget::renderScene()
         glMultMatrixd(tot.data);
 
         /*particles*/
-        glDisable(GL_DEPTH);
-        glEnable(GL_BLEND);
+        //glDisable(GL_DEPTH);
+        //glEnable(GL_BLEND);
 
         //planet->emitter->updateParticles();       //Move the particles
-        //planet->emitter->drawParticles();         //Draw the particles
+        //planet->emitter->drawParticles(planet->getTrans());         //Draw the particles
 
-        glAccum(GL_MULT, .9f);
+        //glAccum(GL_MULT, .9f);
 
-        glAccum(GL_ACCUM, 0.1f);
+        //glAccum(GL_ACCUM, 0.1f);
 //
-        glAccum(GL_RETURN, 1.0f);
+ //       glAccum(GL_RETURN, 1.0f);
 
-        glFlush();
+   //     glFlush();
         /*particles*/
 
 
@@ -536,8 +560,8 @@ void GLWidget::renderScene()
         glBindTexture(GL_TEXTURE_2D,0);
  }
 
-    //m_emitter.updateParticles();
-    //m_emitter.drawParticles();
+    //m_emitter->updateParticles();
+    //m_emitter->drawParticles();
 
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();
@@ -750,13 +774,21 @@ void GLWidget::paintText()
     glColor3f(1.f, 1.f, 1.f);
 
     // Combine the previous and current framerate
-    if (m_fps >= 0 && m_fps < 1000)
+    if (m_fps >= 0.01 && m_fps < 1000)
     {
        m_prevFps *= 0.95f;
        m_prevFps += m_fps * 0.05f;
     }
 
+    if (m_prevFps < 0.1)
+        m_prevFps = 0.0f;
+
+    std::string s;
+    std::stringstream sendout;
+    sendout << "FPS: " << (int) m_prevFps;
+    s = sendout.str();
+
     // QGLWidget's renderText takes xy coordinates, a string, and a font
-    renderText(10, 20, "FPS: " + QString::number((int) (m_prevFps)), m_font);
+    renderText(10, 20, QString(s.data()), m_font);
     renderText(10, 750, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
 }

@@ -15,7 +15,7 @@ Planet::Planet(triangle_t* mid, int numMid,GLUquadric* sphere)
     m_total=Matrix4x4::identity();
     m_sphere=sphere;
 
-    //emitter = new ParticleEmitter(2);
+    emitter = new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(1.0f,1.0f,0.0f),0.1f,0.01f,0.5f, 1000);
 
 }
 void Planet::set_texture(int texture){
@@ -101,6 +101,7 @@ double Planet::get_radius(){
 
 void Planet::set_radius(double r){
     m_radius=r;
+    emitter->setRadius(r,r*1.5);
 }
 
 Matrix4x4 Planet::getTotalTrans(){
