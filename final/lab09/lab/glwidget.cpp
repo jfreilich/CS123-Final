@@ -40,6 +40,8 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_timer(this), m_prevTime(0), m_prevFps(0.f), m_fps(0.f),
     m_font("Deja Vu Sans Mono", 8, 4)
 {
+    glClearColor(0,0,0,1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
     setCursor(Qt::BlankCursor);
@@ -215,7 +217,7 @@ void GLWidget::handleKeys() {
 
 GLuint GLWidget::loadTexture(const QString &filename)
 {
-    // Make sure the image file exists
+    // Make sure the image file tsts
     fflush(stdout);
 
     QFile file(filename);
