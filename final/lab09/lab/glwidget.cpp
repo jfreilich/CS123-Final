@@ -45,6 +45,9 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_font("Deja Vu Sans Mono", 8, 4)
 {
 
+    glClearColor(0,0,0,1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
     setFocusPolicy(Qt::StrongFocus);
 
     keys = QList<int>();
@@ -217,7 +220,7 @@ void GLWidget::handleKeys() {
 
 GLuint GLWidget::loadTexture(const QString &filename)
 {
-    // Make sure the image file exists
+    // Make sure the image file tsts
     fflush(stdout);
 
     QFile file(filename);
@@ -406,7 +409,8 @@ void GLWidget::initializeGL()
         int zb = (i%2 == 0) ? -1 : 1;
         int zc = (i%4 == 1 || i%4 == 3) ? -1 : 1;
 
-        m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),0.1f,1.0f,0.5f, 3));
+        m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),
+                                              0.1f,SKYBOX_RADIUS,0.01f, 300));
 
         Matrix4x4 mat = getTransMat(Vector4(za*SKYBOX_RADIUS,
                                             zb*SKYBOX_RADIUS,
