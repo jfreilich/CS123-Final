@@ -66,11 +66,13 @@ private:
     Vector2 m_prevMousePos;
     OrbitCamera m_camera;
     bool pause;
+    GLUquadric* m_glu_sphere;
 
     // Resources
     QHash<QString, QGLShaderProgram *> m_shaderPrograms; // hash map of all shader programs
     QHash<QString, QGLFramebufferObject *> m_framebufferObjects; // hash map of all framebuffer objects
     GLuint* m_textures;// list of textures
+    Vector4* m_texture_colors;//list of static color of texture
     PlanetMaster m_pms; // master of planets
     GLuint m_skybox; // skybox call list ID
     GLuint m_cubeMap; // cubeMap texture ID

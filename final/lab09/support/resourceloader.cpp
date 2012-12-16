@@ -43,7 +43,6 @@ GLuint ResourceLoader::loadCubeMap(QList<QFile *> files)
 
     // Unbind the texture
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
     return id;
 }
 
@@ -70,7 +69,7 @@ GLuint ResourceLoader::loadSkybox()
 
     // Be glad we wrote this for you...ugh.
     glBegin(GL_QUADS);
-    float extent = 300.0f;
+    float extent = 768.0f;
     glTexCoord3f( 1.0f, -1.0f, -1.0f); glVertex3f( extent, -extent, -extent);
     glTexCoord3f(-1.0f, -1.0f, -1.0f); glVertex3f(-extent, -extent, -extent);
     glTexCoord3f(-1.0f,  1.0f, -1.0f); glVertex3f(-extent,  extent, -extent);
