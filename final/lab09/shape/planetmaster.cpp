@@ -44,8 +44,8 @@ void PlanetMaster::addPlanet(Vector3 cam_pos) {
     density=1.0;
 
     int texture=rand();
-    texture=texture%14;
-    texture+=2;
+    texture=texture%13;
+    texture+=3;
 
 //    if (texture==1||texture==2){
 //        texture=3;

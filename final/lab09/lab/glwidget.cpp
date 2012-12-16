@@ -44,10 +44,8 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_timer(this), m_prevTime(0), m_prevFps(0.f), m_fps(0.f),
     m_font("Deja Vu Sans Mono", 8, 4)
 {
-    setFocusPolicy(Qt::StrongFocus);
-    setMouseTracking(true);
-    setCursor(Qt::BlankCursor);
 
+    setFocusPolicy(Qt::StrongFocus);
 
     keys = QList<int>();
 
@@ -76,7 +74,7 @@ GLWidget::~GLWidget()
     //glmDelete(m_dragon.model);
 
     for (int i=0;i<TEXTURES;i++){
-       // glDeleteTextures(1,&(m_textures[i]));
+        glDeleteTextures(1,&(m_textures[i]));
     }
 
     //delete m_emitters;
@@ -407,11 +405,14 @@ void GLWidget::initializeGL()
         int za = (i>3) ? -1 : 1;
         int zb = (i%2 == 0) ? -1 : 1;
         int zc = (i%4 == 1 || i%4 == 3) ? -1 : 1;
-        m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),0.1f,1.0f,0.5f, 50));
-        Matrix4x4 a = Matrix4x4::identity();
-        a.d = za*SKYBOX_RADIUS;
-        a.h = zb*SKYBOX_RADIUS;
-        a.l = zc*SKYBOX_RADIUS;
+
+        m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),0.1f,1.0f,0.5f, 3));
+
+        Matrix4x4 mat = getTransMat(Vector4(za*SKYBOX_RADIUS,
+                                            zb*SKYBOX_RADIUS,
+                                            zc*SKYBOX_RADIUS,
+                                            1));
+        m_emitterTrans.append(mat);
     }
 
     glClear(GL_ACCUM_BUFFER_BIT);
@@ -749,10 +750,10 @@ void GLWidget::renderScene()
         glBindTexture(GL_TEXTURE_2D,0);
  }
 
-    /*for (int i=0;i<m_emitters.size();i++) {
-        m_emitters.at(i)->updateParticles();       //Move the particles
+    for (int i=0;i<m_emitters.size();i++) {
+        m_emitters.at(i)->updateParticles();                           //Move the particles
         m_emitters.at(i)->drawParticles(m_emitterTrans.at(i));         //Draw the particles
-    }*/
+    }
 
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();
@@ -825,6 +826,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
  **/
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    setMouseTracking(true);
+    setCursor(Qt::BlankCursor);
 
     m_prevMousePos.x = event->x();
     m_prevMousePos.y = event->y();

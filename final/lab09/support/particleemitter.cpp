@@ -36,7 +36,7 @@ void ParticleEmitter::resetParticle(unsigned i)
 
     m_particles[i].life = 2.0;
 
-    m_particles[i].decay = urand(m_littleR,m_bigR);
+    m_particles[i].decay = m_fuzziness;//urand(m_littleR,m_bigR);
 
     m_particles[i].color = m_color;
 
@@ -118,7 +118,7 @@ void ParticleEmitter::drawParticles(Matrix4x4 trans)
         pos.x = m_particles[i].pos.x;
         pos.y = m_particles[i].pos.y;
         pos.z = m_particles[i].pos.z;
-        pos.w = 0;
+        pos.w = 1;
         pos = trans * pos;
 
         glVertex3f(pos.x-scale,pos.y-scale,pos.z);
