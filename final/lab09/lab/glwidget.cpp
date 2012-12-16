@@ -407,10 +407,10 @@ void GLWidget::initializeGL()
     for (int i=0;i<8;i++) {
         int za = (i>3) ? -1 : 1;
         int zb = (i%2 == 0) ? -1 : 1;
-        int zc = (i%4 == 1 || i%4 == 3) ? -1 : 1;
+        int zc = (i%4 == 2 || i%4 == 3) ? -1 : 1;
 
         m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),
-                                              0.1f,SKYBOX_RADIUS,0.01f, 300));
+                                              0.3f,SKYBOX_RADIUS*2,0.4f, 500));
 
         Matrix4x4 mat = getTransMat(Vector4(za*SKYBOX_RADIUS,
                                             zb*SKYBOX_RADIUS,
@@ -657,6 +657,7 @@ void GLWidget::paintGL()
 //        glBindTexture(GL_TEXTURE_2D, 0);
 //    }
 
+    swapBuffers();
     paintText();
 }
 
@@ -666,7 +667,7 @@ void GLWidget::paintGL()
 void GLWidget::renderScene()
 {
     // Enable depth testing
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Enable cube maps and draw the skybox
@@ -694,9 +695,11 @@ void GLWidget::renderScene()
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
 
     glDisable(GL_TEXTURE_CUBE_MAP);
-    glEnable(GL_DEPTH_TEST);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    //glEnable(GL_DEPTH_TEST);
+    //glClear(GL_DEPTH_BUFFER_BIT);
+
     glEnable(GL_TEXTURE_2D);
+
     QList<Planet*> planets = m_pms.getPlanets();
     int size=planets.size();
     glMatrixMode(GL_MODELVIEW);
@@ -754,10 +757,14 @@ void GLWidget::renderScene()
         glBindTexture(GL_TEXTURE_2D,0);
  }
 
+    glPushMatrix();
+    glTranslatef(m_camera.eye.x*0.97,m_camera.eye.y*0.97,m_camera.eye.z*0.97);
+
     for (int i=0;i<m_emitters.size();i++) {
         m_emitters.at(i)->updateParticles();                           //Move the particles
         m_emitters.at(i)->drawParticles(m_emitterTrans.at(i));         //Draw the particles
     }
+    glPopMatrix();
 
     // Render the dragon with the reflection shader bound
    // m_shaderPrograms["reflect"]->bind();
@@ -769,7 +776,7 @@ void GLWidget::renderScene()
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
 
 }
 
@@ -950,6 +957,14 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_L) {
         // anything for key L here
+        return;
+    }
+    if (event->key() == Qt::Key_Period) {
+        QImage qi = grabFrameBuffer(false);
+        QString filter;
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"), "", tr("PNG Image (*.png)"), &filter);
+        if (fileName.size() > 0)
+            qi.save(QFileInfo(fileName).absoluteDir().absolutePath() + "/" + QFileInfo(fileName).baseName() + ".png", "PNG", 100);
         return;
     }
 
