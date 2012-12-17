@@ -16,40 +16,48 @@ void PlanetMaster::remove_planet(int i){
 
 void PlanetMaster::create_solar_system(){
     Vector4 v,p;
-    double s,ra, rd, density,texture;
+    double s,ra, rd, mass,texture;
+
     Matrix4x4 rot;
+    //make a sun
     Planet* sun=new Planet();
-    s=64;
+    s=400;
+    ra=0.0;
+    rd=0.25;
     v=Vector4(0,0,0,0);
     texture=15;
-    p=Vector4(0,0,0,0);
-    density=1.0;
+    p=Vector4(0.0,0.0,0.0,1.0);
+    mass=333,000.0;
     Planet * temp=sun;
     temp->set_velocity(v);
     temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
     temp->set_radius(s);
     temp->set_trans(getTransMat(p));
- //   temp->set_axis_angle(ra);
-    temp->set_density(density);
- //   rot=getRotXMat(rd);
-  //  temp->set_rot(rot);
+    temp->set_axis_angle(ra);
+    temp->set_mass(mass);
+    rot=getRotXMat(rd);
+    temp->set_rot(rot);
     temp->calculate_composite_transformations();
     temp->set_texture(texture);
     m_planets.append(temp);
+
+
+
     Planet* earth=new Planet();
+    mass=1;
     temp=earth;
     s=16;
-    texture=8;
-    p=Vector4(128,0,0,0);
-    v=Vector4(0,4.0,0,0);
+    texture=10;
+    p=Vector4(512.0,0.0,0.0,1.0);
+    v=Vector4(0.0,0.0,36.0,0.0);
     temp->set_velocity(v);
     temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
     temp->set_radius(s);
     temp->set_trans(getTransMat(p));
- //   temp->set_axis_angle(ra);
-    temp->set_density(density);
- //   rot=getRotXMat(rd);
-  //  temp->set_rot(rot);
+    temp->set_axis_angle(ra);
+    temp->set_mass(mass);
+    rot=getRotXMat(rd);
+    temp->set_rot(rot);
     temp->calculate_composite_transformations();
     temp->set_texture(texture);
     m_planets.append(temp);
@@ -78,7 +86,7 @@ void PlanetMaster::addPlanet(Vector3 cam_pos) {
     orbitd*=M_PI/16.0;
     int s=rand();
     s=s%32;
-    s+=16;
+    s+=64;
 
 
 

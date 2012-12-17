@@ -46,7 +46,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_timer(this), m_prevTime(0), m_prevFps(0.f), m_fps(0.f),
     m_font("Deja Vu Sans Mono", 8, 4)
 {
-
+    solar=false;
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -98,13 +98,16 @@ void GLWidget::tick()
 
         QList<Planet*> planets = m_pms.getPlanets();
         int size = planets.size();
-        cout << size << endl;
         Planet *pI, *pJ;
         Vector4 positionI,positionJ,difference,accelerationJ,accelerationI, fromItoJ, fromJtoI, velocityI, velocityJ;
+        Vector3 p3;
         double x,y,z;
-        double max=2048;
+        double max=4096;
         //double C=4.0*M_PI/3.0;
-        double G=0.0003;
+        double G=0.01;
+        if (solar){
+            G=1.0;
+        }
         double massI, massJ;
         double rI, rJ, distance,total, newR, volume,distance2;
         for (int i=0;i<size;i++) {
@@ -119,7 +122,14 @@ void GLWidget::tick()
             //printf("%f\t%f\t%f\n\n",v.x,v.y,v.z);
             fflush(stdout);
             velocityI=pI->get_velocity();
-            if (x>=max||y>=max||z<=-max){
+            p3=Vector3(positionI.x,positionI.y,positionI.z);
+            if (x>=max-rI||y>=max-rI||z<=-max+rI){
+                m_pms.remove_planet(i);
+                planets.removeAt(i);
+                i--;
+                size--;
+            }
+            else if(m_camera.dir.dot(p3-m_camera.eye)<0){
                 m_pms.remove_planet(i);
                 planets.removeAt(i);
                 i--;
@@ -147,13 +157,6 @@ void GLWidget::tick()
                         volume=(rI*rI*rI+rJ*rJ*rJ);
                         newR=pow(volume,1.0/3.0);
                         if (rI>=rJ){
-    //                        p->set_radius(newR);
-    //                        m_pms.remove_planet(j);
-    //                        planets.removeAt(j);
-    //                        i--;
-    //                        j--;
-    //                        size--;
-
                             if (rJ>3){
                                 pI->set_radius(rI+1.0);
                                 pJ->set_radius(rJ-2.0);
@@ -165,7 +168,6 @@ void GLWidget::tick()
                                 j--;
                                 size--;
                             }
-
                         }
                         else {
 
@@ -180,12 +182,6 @@ void GLWidget::tick()
                                 size--;
                                 j=i;
                             }
-    //                        p2->set_radius(newR);
-    //                        m_pms.remove_planet(i);
-    //                        planets.removeAt(i);
-    //                        i--;
-    //                        size--;
-    //                        break;
                         }
                     }
                     else{
@@ -202,8 +198,12 @@ void GLWidget::tick()
         }
         int rando = rand();
         rando=rando%1000;
-        if (rando<=50){
-        //    m_pms.addPlanet(m_camera.eye);
+        int rm=10;
+        if (solar){
+            rm=-1;
+        }
+        if (rando<=rm){
+            m_pms.addPlanet(m_camera.eye);
         }
     }
 }
@@ -485,13 +485,6 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-
-    /*fileList.append(new QFile("stars/left.jpg"));
-    fileList.append(new QFile("stars/front.jpg"));
-    fileList.append(new QFile("stars/right.jpg"));
-    fileList.append(new QFile("stars/back.jpg"));
-    fileList.append(new QFile("stars/top.jpg"));
-    fileList.append(new QFile("stars/bottom.jpg"));*/
     fileList.append(new QFile("stars/starssmall.jpg"));
     fileList.append(new QFile("stars/starssmall.jpg"));
     fileList.append(new QFile("stars/starssmall.jpg"));
@@ -570,7 +563,7 @@ void GLWidget::applyPerspectiveCamera(float width, float height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(m_camera.fovy, ratio, 0.1f, 4096.f);
+    gluPerspective(m_camera.fovy, ratio, 0.1f, 12000.f);
 
     gluLookAt(m_camera.eye.x, m_camera.eye.y, m_camera.eye.z,
               m_camera.eye.x + m_camera.dir.x, m_camera.eye.y + m_camera.dir.y, m_camera.eye.z + m_camera.dir.z,
@@ -681,6 +674,7 @@ void GLWidget::renderScene()
 {
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
+    glClearColor(1,1,1,1);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Enable cube maps and draw the skybox
@@ -947,8 +941,20 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         m_camera.eye = Vector3::zero();
         return;
     }
+    if (event->key() == Qt::Key_C) {
+        solar=false;
+        QList<Planet*> planets = m_pms.getPlanets();
+        int size = planets.size();
+        for (int i=0;i<size;i++){
+            m_pms.remove_planet(i);
+            planets.removeAt(i);
+            i--;
+            size--;
+        }
+    }
 
     if (event->key() == Qt::Key_L) {
+        solar=true;
         this->create_solar_system();
         return;
     }
