@@ -1,0 +1,21 @@
+Hello and welcome to Planets Inc.
+
+We would like you to enjoy your stay with us as your cruise the galatic waves.
+
+
+We have a Planet Master who controls all the planets, adding and removing them as he deems fit. He gives them a stochastically random position and velocity, and then releases them into the wild.
+
+Gravity fights for control of the planets, using /realistic/ physics.
+
+Particles fly around the universe, little bits of light and sparkle to add atmosphere.
+
+The planets are texture and displacement mapped in order to provide a unique experience every time.
+
+You can revolve around an individual planet, following its journey through the universe.
+You also can temporarily stop time in order to inspect individual planets.
+ 
+You can take photos of the world as if you needed glasses. As in, it is blurred.
+
+Planets can collide with each other, and the larger planet will steal size from the smaller, until it is all but devoured.
+
+OpenGl likes to hold onto previous datum, and will open garble the screen before it's overwritten by true data. Some z-fighting occurs.
