@@ -18,7 +18,7 @@ void OrbitCamera::mouseMove(const Vector2 &delta)
     dir = Vector3(cosf(theta) * cosf(phi), sinf(phi), sinf(theta) * cosf(phi));
 }
 
-void OrbitCamera::move(Vector2 direction, float delta)
+void OrbitCamera::move(Vector3 direction, float delta)
 {
     if (direction.x == 1)
             eye += dir.cross(up) * delta;
@@ -28,12 +28,11 @@ void OrbitCamera::move(Vector2 direction, float delta)
             eye += dir * delta;
     if (direction.y == -1)
             eye -= dir * delta;
+    if (direction.z == -1)
+            eye += (dir.cross(up)).cross(dir) * delta;
+    if (direction.z == 1)
+            eye -= (dir.cross(up)).cross(dir) * delta;
 
-    //eye.y = max(-290.0,min(290.0,eye.y));
-    //eye.x = max(-290.0,min(290.0,eye.x));
-    //eye.z = max(-290.0,min(290.0,eye.z));
-
-    //cout << eye << endl;
 }
 
 REAL OrbitCamera::toRadians(float degrees)
