@@ -17,20 +17,7 @@
 
 #include <sstream>
 using namespace std;
-//::cout;
-//using std::endl;
 
-/*
- box sizing localization
-
- orbit velocity around particular axis and on particular axes
-
- particle generation around planets / rings
-
- movement around box
-
- lytro effect w/ pausing/saving image
- */
 
 extern "C"
 {
@@ -110,6 +97,7 @@ void GLWidget::tick()
     handleKeys();
 
     if (revolving != NULL)
+        if (revolving )
         revolveCamera();
 
     if (!pause) {
@@ -514,7 +502,6 @@ void GLWidget::loadCubeMap()
     fileList.append(new QFile("stars/starssmall.jpg"));
 
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
-    cout << m_cubeMap << endl;
 }
 
 /**
@@ -626,63 +613,10 @@ void GLWidget::paintGL()
 
     applyOrthogonalCamera(width,height);
 
-    //renderBlur(width,height);
-
     glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
 
     renderTexturedQuad(width, height);
-
-    //m_shaderPrograms["blur"]->release();
-
     glBindTexture(GL_TEXTURE_2D, 0);
-
-    //glDisable(GL_DEPTH);
-    //glEnable(GL_BLEND);
-
-    //glAccum(GL_MULT, .9f);
-
-    //glAccum(GL_ACCUM, 0.1f);
-
-    //glAccum(GL_RETURN, 1.0f);
-
-    //glFlush();
-    //swapBuffers();
-
-    // TODO: Step 1 - use the brightpass shader to render bright areas
-    // only to fbo_2
-
-//    m_framebufferObjects["fbo_2"]->bind();
-//    m_shaderPrograms["brightpass"]->bind();
-
-//    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
-
-//    renderTexturedQuad(width,height);
-
-//
-//    glBindTexture(GL_TEXTURE_2D, 0);
-
-//    m_framebufferObjects["fbo_2"]->release();
-
-
-    // TODO: Uncomment this section in step 2 of the lab
-//    float scales[] = {4.f,8.f};
-//    for (int i = 0; i < 2; ++i)
-//    {
-//        // Render the blurred brightpass filter result to fbo 1
-//       renderBlur(width / scales[i], height / scales[i]);
-
-//       // Bind the image from fbo to a texture
-//        glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-//        // Enable alpha blending and render the texture to the screen
-//        glEnable(GL_BLEND);
-//        glBlendFunc(GL_ONE, GL_ONE);
-//        renderTexturedQuad(width * scales[i], height * scales[i]);
-//        glDisable(GL_BLEND);
-//        glBindTexture(GL_TEXTURE_2D, 0);
-//    }
 
     swapBuffers();
     paintText();
@@ -768,14 +702,6 @@ void GLWidget::renderScene()
     }
     glPopMatrix();
 
-    // Render the dragon with the reflection shader bound
-   // m_shaderPrograms["reflect"]->bind();
-   // m_shaderPrograms["reflect"]->setUniformValue("CubeMap", GL_TEXTURE0);
-  //  glPushMatrix();
- //   glTranslatef(1.25f,0.f,0.f);
-    //glCallList(m_dragon.idx);
- //   glPopMatrix();
-
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
     //glDisable(GL_DEPTH_TEST);
@@ -791,7 +717,7 @@ void GLWidget::renderScene()
 **/
 void GLWidget::renderBlur(int width, int height, Planet *p, int n)
 {
-    glEnable(GL_TEXTURE_2D);
+    /*glEnable(GL_TEXTURE_2D);
     QList<Planet*> planets = m_pms.getPlanets();
     int size=planets.size();
     glMatrixMode(GL_MODELVIEW);
@@ -823,7 +749,7 @@ void GLWidget::renderBlur(int width, int height, Planet *p, int n)
         m_shaderPrograms["blur"]->release();
         glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
-    }
+    }*/
 }
 
 /**
@@ -863,8 +789,6 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
                             m_camera.getViewingTransformation());
     RayTracer::Closest *c = r.performTrace(res,eye4,m_pms.getPlanets());
 
-    if (c->planet != NULL)
-        cout << c->planet->get_position() << endl;
 }
 
 /**
@@ -872,10 +796,6 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 **/
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-    if (event->orientation() == Qt::Vertical)
-    {
-        //m_camera.mouseWheel(event->delta());
-    }
 }
 
 /**
@@ -997,12 +917,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         m_camera.eye = Vector3::zero();
         return;
     }
-    if (event->key() == Qt::Key_B) {
-        int width = this->width();
-        int height = this->height();
-        this->renderBlur(width,height,0,0);
-        return;
-    }
+
     if (event->key() == Qt::Key_C) {
         solar=false;
         QList<Planet*> planets = m_pms.getPlanets();
@@ -1098,7 +1013,9 @@ void GLWidget::paintText()
 
     // QGLWidget's renderText takes xy coordinates, a string, and a font
     renderText(10, 20, QString(s.data()), m_font);
-    renderText(10, this->height() - 10, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
+    renderText(12, this->height() - 42, "Planets Inc. by jfedor and jfreilic");
+    renderText(10, this->height() - 25, "Space: Pause, R: Reset Camera, Arrow Keys: Move, Escape: Quit", m_font);
+    renderText(10, this->height() - 10, "M: Focus on Object, L: Launch Solar System (Beta)", m_font);
 }
 
 void GLWidget::adjustSize() {
