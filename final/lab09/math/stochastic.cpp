@@ -28,8 +28,8 @@ Vector4 stochastic::velocity(random_vals_t * rv){
     y=y%64;
     y-=32;
     int z=rand();
-    z=z%128;
-    z-=128;
+    z=z%192;
+    z-=192;
     Vector4 p=Vector4(x, y, z,0);
     //rv->p=rv->p/25.0;
     return p;

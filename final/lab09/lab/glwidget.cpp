@@ -102,7 +102,7 @@ void GLWidget::tick()
         double x,y,z;
         double max=4096;
         //double C=4.0*M_PI/3.0;
-        double G=0.01;
+        double G=1;
         if (solar){
             G=1.0;
         }
@@ -110,7 +110,6 @@ void GLWidget::tick()
         double rI, rJ, distance,total, newR, volume,distance2;
         for (int i=0;i<size;i++) {
             pI = planets.at(i);
-            pI->move();
             positionI=pI->get_position();
             x=fabs(positionI.x);
             y=fabs(positionI.y);
@@ -185,14 +184,15 @@ void GLWidget::tick()
                     else{
                         //-r from M to m
                         //r = from m to M
-                        accelerationJ=G*massI*fromJtoI/distance2;
+                        accelerationJ=G*massI*fromJtoI/(120*distance2);
                         pJ->set_velocity(velocityJ+accelerationJ);
-                        accelerationI=G*massJ*fromItoJ/distance2;
+                        accelerationI=G*massJ*fromItoJ/(120*distance2);
                         pI->set_velocity(velocityI+accelerationI);
                     }
 
                 }
             }
+            pI->move();
         }
         int rando = rand();
         rando=rando%1000;
@@ -265,8 +265,6 @@ GLuint GLWidget::loadTexture(const QString &filename)
     glBindTexture(GL_TEXTURE_2D, 0);
     return id;
 }
-
-
 
 
 /**
@@ -792,32 +790,41 @@ void GLWidget::renderScene()
   @param width: the viewport width
   @param height: the viewport height
 **/
-void GLWidget::renderBlur(int width, int height)
+void GLWidget::renderBlur(int width, int height, Planet *p, int n)
 {
-    int radius = 2;
-    int dim = radius * 2 + 1;
-    GLfloat kernel[dim * dim];
-    GLfloat offsets[dim * dim * 2];
-    createBlurKernel(radius, width, height, &kernel[0], &offsets[0]);
-
-
-    m_framebufferObjects["fbo_1"]->bind();
-    m_shaderPrograms["blur"]->bind();
-
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_2"]->texture());
-
-    m_shaderPrograms["blur"]->setUniformValueArray("offsets",offsets,dim*dim*2,2);
-    m_shaderPrograms["blur"]->setUniformValueArray("kernel",kernel,dim*dim,1);
-    m_shaderPrograms["blur"]->setUniformValue("arraySize",dim);
-
-    renderTexturedQuad(width,height);
-
-    m_shaderPrograms["blur"]->release();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    m_framebufferObjects["fbo_1"]->release();
-
+    glEnable(GL_TEXTURE_2D);
+    QList<Planet*> planets = m_pms.getPlanets();
+    int size=planets.size();
+    glMatrixMode(GL_MODELVIEW);
+    for (int j=0;j<size;j++) {
+        Planet *planet = planets.at(j);
+        glEnable(GL_TEXTURE_2D);
+        glPushMatrix();
+        glLoadIdentity();
+        Matrix4x4 tot=planet->get_total_trans();
+        tot=tot.getTranspose();
+        glMultMatrixd(tot.data);
+        glEnable(GL_TEXTURE_2D);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,m_textures[planet->get_texture()]);
+        m_shaderPrograms["blur"]->bind();
+        m_shaderPrograms["blur"]->setUniformValue("tex", 0);
+        int radius = 2;
+        int dim = radius * 2 + 1;
+        GLfloat kernel[dim * dim];
+        GLfloat offsets[dim * dim * 2];
+        createBlurKernel(radius, width, height, &kernel[0], &offsets[0]);
+        m_shaderPrograms["blur"]->setUniformValueArray("offsets",offsets,dim*dim*2,2);
+        m_shaderPrograms["blur"]->setUniformValueArray("kernel",kernel,dim*dim,1);
+        m_shaderPrograms["blur"]->setUniformValue("arraySize",dim);
+        gluQuadricNormals(m_glu_sphere, GLU_SMOOTH);
+        gluQuadricTexture(m_glu_sphere, GL_TRUE);
+        gluSphere(m_glu_sphere,planet->get_radius(),100,100);
+        glPopMatrix();
+        m_shaderPrograms["blur"]->release();
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glPopMatrix();
+    }
 
 }
 
@@ -957,6 +964,12 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_R) {
         m_camera.eye = Vector3::zero();
+        return;
+    }
+    if (event->key() == Qt::Key_B) {
+        int width = this->width();
+        int height = this->height();
+        this->renderBlur(width,height,0,0);
         return;
     }
     if (event->key() == Qt::Key_C) {
