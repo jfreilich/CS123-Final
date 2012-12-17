@@ -109,8 +109,7 @@ void GLWidget::tick()
         Vector3 p3;
         double x,y,z;
         double max=4096;
-        //double C=4.0*M_PI/3.0;
-        double G=1;
+        double G=1.0;
         if (solar){
             G=1.0;
         }
@@ -121,25 +120,31 @@ void GLWidget::tick()
             positionI=pI->get_position();
             x=fabs(positionI.x);
             y=fabs(positionI.y);
-            z=positionI.z;
+            z=fabs(positionI.z);
             rI=pI->get_radius();
             massI=pI->get_mass();
             //printf("%f\t%f\t%f\n\n",v.x,v.y,v.z);
             fflush(stdout);
             velocityI=pI->get_velocity();
             p3=Vector3(positionI.x,positionI.y,positionI.z);
-            if (x>=max-rI||y>=max-rI||z<=-max+rI){
+            if (x>=0.97*m_camera.eye.x+max||y>=0.97*m_camera.eye.y+max||z>=0.97*m_camera.eye.z+max){
+                if (pI==revolving){
+                    revolving=NULL;
+                }
                 m_pms.remove_planet(i);
                 planets.removeAt(i);
                 i--;
                 size--;
             }
-            else if(m_camera.dir.dot(p3-m_camera.eye)<0){
-                m_pms.remove_planet(i);
-                planets.removeAt(i);
-                i--;
-                size--;
-            }
+//            else if(m_camera.dir.dot(p3-m_camera.eye)<0){
+//                if (pI==revolving){
+//                    revolving=NULL;
+//                }
+//                m_pms.remove_planet(i);
+//                planets.removeAt(i);
+//                i--;
+//                size--;
+//            }
             else{
                 //if (collide)
                 for (int j=0;j<i;j++){
@@ -159,7 +164,6 @@ void GLWidget::tick()
                     distance=difference.getMagnitude();
                     distance2=difference.getMagnitude2();
                     if (distance<=total){
-                        volume=(rI*rI*rI+rJ*rJ*rJ);
                         newR=pow(volume,1.0/3.0);
                         if (rI>=rJ){
                             if (rJ>3){
@@ -167,6 +171,9 @@ void GLWidget::tick()
                                 pJ->set_radius(rJ-2.0);
                             }
                             else{
+                                if (pJ==revolving){
+                                    revolving=NULL;
+                                }
                                 m_pms.remove_planet(j);
                                 planets.removeAt(j);
                                 i--;
@@ -175,12 +182,14 @@ void GLWidget::tick()
                             }
                         }
                         else {
-
                             if (rI>3){
                                 pJ->set_radius(rJ+1.0);
                                  pI->set_radius(rI-2.0);
                             }
                             else{
+                                if (pI==revolving){
+                                    revolving=NULL;
+                                }
                                 m_pms.remove_planet(i);
                                 planets.removeAt(i);
                                 i--;
@@ -192,9 +201,9 @@ void GLWidget::tick()
                     else{
                         //-r from M to m
                         //r = from m to M
-                        accelerationJ=G*massI*fromJtoI/(120*distance2);
+                        accelerationJ=G*massI*fromJtoI/(120.0*distance2);
                         pJ->set_velocity(velocityJ+accelerationJ);
-                        accelerationI=G*massJ*fromItoJ/(120*distance2);
+                        accelerationI=G*massJ*fromItoJ/(120.0*distance2);
                         pI->set_velocity(velocityI+accelerationI);
                     }
 
@@ -706,50 +715,6 @@ void GLWidget::renderScene()
     glDisable(GL_CULL_FACE);
     //glDisable(GL_DEPTH_TEST);
 
-}
-
-/**
-  Run a gaussian blur on the texture stored in fbo 1 and
-  put the result in fbo 2.  The blur should have a radius of 2.
-
-  @param width: the viewport width
-  @param height: the viewport height
-**/
-void GLWidget::renderBlur(int width, int height, Planet *p, int n)
-{
-    /*glEnable(GL_TEXTURE_2D);
-    QList<Planet*> planets = m_pms.getPlanets();
-    int size=planets.size();
-    glMatrixMode(GL_MODELVIEW);
-    for (int j=0;j<size;j++) {
-        Planet *planet = planets.at(j);
-        glEnable(GL_TEXTURE_2D);
-        glPushMatrix();
-        glLoadIdentity();
-        Matrix4x4 tot=planet->get_total_trans();
-        tot=tot.getTranspose();
-        glMultMatrixd(tot.data);
-        glEnable(GL_TEXTURE_2D);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,m_textures[planet->get_texture()]);
-        m_shaderPrograms["blur"]->bind();
-        m_shaderPrograms["blur"]->setUniformValue("tex", 0);
-        int radius = 2;
-        int dim = radius * 2 + 1;
-        GLfloat kernel[dim * dim];
-        GLfloat offsets[dim * dim * 2];
-        createBlurKernel(radius, width, height, &kernel[0], &offsets[0]);
-        m_shaderPrograms["blur"]->setUniformValueArray("offsets",offsets,dim*dim*2,2);
-        m_shaderPrograms["blur"]->setUniformValueArray("kernel",kernel,dim*dim,1);
-        m_shaderPrograms["blur"]->setUniformValue("arraySize",dim);
-        gluQuadricNormals(m_glu_sphere, GLU_SMOOTH);
-        gluQuadricTexture(m_glu_sphere, GL_TRUE);
-        gluSphere(m_glu_sphere,planet->get_radius(),100,100);
-        glPopMatrix();
-        m_shaderPrograms["blur"]->release();
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glPopMatrix();
-    }*/
 }
 
 /**

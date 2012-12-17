@@ -45,7 +45,6 @@ protected:
     void applyOrthogonalCamera(float width, float height);
     void applyPerspectiveCamera(float width, float height);
     void renderTexturedQuad(int width, int height);
-    void renderBlur(int w, int h, Planet* p, int n);
     void renderScene();
     void paintText();
     GLuint LoadTextureRAW( const char * filename, int wrap );
