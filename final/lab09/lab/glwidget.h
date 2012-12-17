@@ -68,6 +68,7 @@ private:
     QList<Matrix4x4> m_emitterTrans;
 
     Planet* revolving;
+    bool mouseEnabled;
 
     void revolveCamera();
 

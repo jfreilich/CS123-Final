@@ -63,6 +63,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_camera.far = 12000;
 
     pause = true;
+    mouseEnabled = false;
 
     revolving = NULL;
 
@@ -95,6 +96,8 @@ void GLWidget::revolveCamera() {
 
     Vector4 res = (revolving->get_position() - eye4).getNormalized();
     m_camera.dir = Vector3(res.x,res.y,res.z);
+
+
 }
 
 /**
@@ -226,13 +229,18 @@ void GLWidget::tick()
 void GLWidget::handleKeys() {
 
     if (keys.contains(Qt::Key_W))
-        m_camera.move(Vector2(0,1),10);
+        m_camera.move(Vector3(0,1,0),10);
     if (keys.contains(Qt::Key_A))
-        m_camera.move(Vector2(-1,0),10);
+        m_camera.move(Vector3(-1,0,0),10);
     if (keys.contains(Qt::Key_S))
-        m_camera.move(Vector2(0,-1),10);
+        m_camera.move(Vector3(0,-1,0),10);
     if (keys.contains(Qt::Key_D))
-        m_camera.move(Vector2(1,0),10);
+        m_camera.move(Vector3(1,0,0),10);
+
+    if (keys.contains(Qt::Key_Q))
+        m_camera.move(Vector3(0,0,-1),10);
+    if (keys.contains(Qt::Key_Z))
+        m_camera.move(Vector3(0,0,1),10);
 }
 
 void GLWidget::create_solar_system(){
@@ -437,7 +445,7 @@ void GLWidget::initializeGL()
         int zc = (i%4 == 2 || i%4 == 3) ? -1 : 1;
 
         m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),
-                                              0.3f,4096*2,1.f, 500));
+                                              0.3f,4096*2,0.5f, 500));
 
         Matrix4x4 mat = getTransMat(Vector4(za*4096,
                                             zb*4096,
@@ -823,15 +831,17 @@ void GLWidget::renderBlur(int width, int height, Planet *p, int n)
 **/
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    Vector2 pos(event->x(), event->y());
-    //if (event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
-    //{
-        m_camera.mouseMove(pos - m_prevMousePos);
-    //}
+    if (mouseEnabled) {
+        Vector2 pos(event->x(), event->y());
+        //if (event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
+        //{
+            m_camera.mouseMove(pos - m_prevMousePos);
+        //}
 
-    m_prevMousePos = Vector2(width()/2,height()/2);
-    QPoint glob = mapToGlobal(QPoint(width()/2,height()/2));
-    QCursor::setPos(glob);
+        m_prevMousePos = Vector2(width()/2,height()/2);
+        QPoint glob = mapToGlobal(QPoint(width()/2,height()/2));
+        QCursor::setPos(glob);
+    }
 }
 
 /**
@@ -840,6 +850,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     setMouseTracking(true);
+    mouseEnabled = true;
     setCursor(Qt::BlankCursor);
 
     m_prevMousePos.x = event->x();
@@ -1015,6 +1026,11 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
             revolving = NULL;
             pause = false;
         }
+    }
+
+    if (event->key() == Qt::Key_Backspace) {
+        mouseEnabled = false;
+        setCursor(Qt::PointingHandCursor);
     }
 
     if (event->key() == Qt::Key_L) {

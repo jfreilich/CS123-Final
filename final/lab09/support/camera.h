@@ -21,7 +21,7 @@ struct OrbitCamera
     float fovx;
 
     void mouseMove(const Vector2 &delta);
-    void move(Vector2 direction, float delta);
+    void move(Vector3 direction, float delta);
     Matrix4x4 getViewingTransformation();
     REAL toRadians(float degrees);
 };
