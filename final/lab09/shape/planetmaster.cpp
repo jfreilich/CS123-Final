@@ -23,11 +23,11 @@ void PlanetMaster::create_solar_system(){
     Planet* sun=new Planet();
     s=400;
     ra=0.0;
-    rd=0.25;
+    rd=0.01;
     v=Vector4(0,0,0,0);
     texture=15;
     p=Vector4(0.0,0.0,0.0,1.0);
-    mass=333,000.0;
+    mass=333000.0;
     Planet * temp=sun;
     temp->set_velocity(v);
     temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
@@ -49,7 +49,7 @@ void PlanetMaster::create_solar_system(){
     s=16;
     texture=10;
     p=Vector4(512.0,0.0,0.0,1.0);
-    v=Vector4(0.0,0.0,36.0,0.0);
+    v=Vector4(0.0,0.0,2.7,0.0);
     temp->set_velocity(v);
     temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
     temp->set_radius(s);
@@ -61,6 +61,27 @@ void PlanetMaster::create_solar_system(){
     temp->calculate_composite_transformations();
     temp->set_texture(texture);
     m_planets.append(temp);
+
+
+    Planet* jupiter=new Planet();
+    mass=317.8;
+    temp=jupiter;
+    s=96;
+    texture=14;
+    p=Vector4(-1024.0,0.0,0.0,1.0);
+    v=Vector4(0.0,0.0,-1.5,0.0);
+    temp->set_velocity(v);
+    temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
+    temp->set_radius(s);
+    temp->set_trans(getTransMat(p));
+    temp->set_axis_angle(ra);
+    temp->set_mass(mass);
+    rot=getRotXMat(rd);
+    temp->set_rot(rot);
+    temp->calculate_composite_transformations();
+    temp->set_texture(texture);
+    m_planets.append(temp);
+
 
 
 }
