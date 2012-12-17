@@ -59,8 +59,12 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     m_camera.zoom = 3.5f;
     m_camera.theta = M_PI * 1.5f, m_camera.phi = 0.2f;
     m_camera.fovy = 60.f;
+    m_camera.fovx = this->width()/this->height()*m_camera.fovy;
+    m_camera.far = 12000;
 
     pause = true;
+
+    revolving = NULL;
 
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 }
@@ -85,6 +89,14 @@ GLWidget::~GLWidget()
     //delete m_emitters;
 }
 
+void GLWidget::revolveCamera() {
+
+    Vector4 eye4 = Vector4(m_camera.eye.x,m_camera.eye.y,m_camera.eye.z,1);
+
+    Vector4 res = (revolving->get_position() - eye4).getNormalized();
+    m_camera.dir = Vector3(res.x,res.y,res.z);
+}
+
 /**
   Our loop.
 **/
@@ -93,6 +105,9 @@ void GLWidget::tick()
     update();
 
     handleKeys();
+
+    if (revolving != NULL)
+        revolveCamera();
 
     if (!pause) {
 
@@ -424,11 +439,11 @@ void GLWidget::initializeGL()
         int zc = (i%4 == 2 || i%4 == 3) ? -1 : 1;
 
         m_emitters.append(new ParticleEmitter(float3(1.0f,1.0f,1.0f),float3(za*-1.0f,zb*-1.0f,zc*-1.0f),
-                                              0.3f,SKYBOX_RADIUS*2,0.4f, 500));
+                                              0.3f,4096*2,1.f, 500));
 
-        Matrix4x4 mat = getTransMat(Vector4(za*SKYBOX_RADIUS,
-                                            zb*SKYBOX_RADIUS,
-                                            zc*SKYBOX_RADIUS,
+        Matrix4x4 mat = getTransMat(Vector4(za*4096,
+                                            zb*4096,
+                                            zc*4096,
                                             1));
         m_emitterTrans.append(mat);
     }
@@ -827,8 +842,15 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     m_prevMousePos.x = event->x();
     m_prevMousePos.y = event->y();
 
-    //RayTracer::generateRayD(event->x(),event->y(),this->width(),this->height(),m_camera.eye,
-    //                        m_camera.getViewingTransformation());
+    Vector4 eye4 = Vector4(m_camera.eye.x,m_camera.eye.y,m_camera.eye.z,1);
+
+    RayTracer r = RayTracer();
+    Vector4 res = r.generateRayD(event->x(),event->y(),this->width(),this->height(),eye4,
+                            m_camera.getViewingTransformation());
+    RayTracer::Closest *c = r.performTrace(res,eye4,m_pms.getPlanets());
+
+    if (c->planet != NULL)
+        cout << c->planet->get_position() << endl;
 }
 
 /**
@@ -923,6 +945,26 @@ void GLWidget::createBlurKernel(int radius, int width, int height,
     }
 }
 
+Planet* GLWidget::findClosestPlanet() {
+
+    QList<Planet*> planets = m_pms.getPlanets();
+
+    double dist = -1;
+    Planet* p;
+    Vector4 eye4 = Vector4(m_camera.eye.x,m_camera.eye.y,m_camera.eye.z,1);
+
+    for (int i=0;i<planets.size();i++) {
+
+        double adist = fabs(planets.at(i)->get_position().getDistance(eye4));
+
+        if (dist == -1 || adist < dist) {
+            p = planets.at(i);
+            dist = adist;
+        }
+    }
+    return p;
+}
+
 /**
   Handles any key press from the keyboard
  **/
@@ -950,6 +992,19 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
             planets.removeAt(i);
             i--;
             size--;
+        }
+    }
+
+    if (event->key() == Qt::Key_M) {
+        if (revolving == NULL) {
+            Planet* p = findClosestPlanet();
+            revolving = p;
+            pause = true;
+            return;
+        }
+        else {
+            revolving = NULL;
+            pause = false;
         }
     }
 

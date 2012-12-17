@@ -17,10 +17,13 @@ struct OrbitCamera
     float theta, phi;
     float fovy;
     float zoom;
+    float far;
+    float fovx;
 
     void mouseMove(const Vector2 &delta);
     void move(Vector2 direction, float delta);
     Matrix4x4 getViewingTransformation();
+    REAL toRadians(float degrees);
 };
 
 #endif // CAMERA_H

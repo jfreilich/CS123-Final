@@ -2,6 +2,7 @@
 #include <qgl.h>
 #include "CS123Algebra.h"
 #include <iostream>
+#include "math.h"
 
 #define M_2PI (2.0*M_PI)
 void OrbitCamera::mouseMove(const Vector2 &delta)
@@ -35,15 +36,21 @@ void OrbitCamera::move(Vector2 direction, float delta)
     //cout << eye << endl;
 }
 
+REAL OrbitCamera::toRadians(float degrees)
+{
+    return degrees * (3.14159265358979/180.0);
+}
+
 Matrix4x4 OrbitCamera::getViewingTransformation() {
 
-    /*Matrix4x4 M2 = Matrix4x4(cotan(getWidthAngle()/2.0)/m_far,0,0,0,
-                             0,(cotan(m_heightAngle/2.0))/m_far,0,0,
-                             0,0,1.0/m_far,0,
+    Matrix4x4 M2 = Matrix4x4(1.0/(tan(toRadians(fovy/2.0)))/far,0,0,0,
+                             0,(1.0/(tan(toRadians(fovx/2.0))))/far,0,0,
+                             0,0,1.0/far,0,
                              0,0,0,1);
-    Vector4 u,v,w;
 
-    w = -look;
+    Vector3 u,v,w;
+
+    w = -dir;
     u = up.cross(w).getNormalized();
     v = w.cross(u);
 
@@ -52,11 +59,11 @@ Matrix4x4 OrbitCamera::getViewingTransformation() {
                              w.x,w.y,w.z,0,
                              0,0,0,1);
 
-    Matrix4x4 M4 = Matrix4x4(1,0,0,(-1.0)*m_position.x,
-                             0,1,0,(-1.0)*m_position.y,
-                             0,0,1,(-1.0)*m_position.z,
+    Matrix4x4 M4 = Matrix4x4(1,0,0,(-1.0)*eye.x,
+                             0,1,0,(-1.0)*eye.y,
+                             0,0,1,(-1.0)*eye.z,
                              0,0,0,1);
 
-    return M4.getInverse()*M3.getInverse()*M2.getInverse();*/
+    return M4.getInverse()*M3.getInverse()*M2.getInverse();
 
 }

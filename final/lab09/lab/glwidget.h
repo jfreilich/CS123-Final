@@ -53,6 +53,8 @@ protected:
     void create_solar_system();
     void adjustSize();
 
+    Planet* findClosestPlanet();
+
     void handleKeys();
 
 protected slots:
@@ -64,6 +66,10 @@ private:
 
     QList<ParticleEmitter*> m_emitters;
     QList<Matrix4x4> m_emitterTrans;
+
+    Planet* revolving;
+
+    void revolveCamera();
 
     QList<int> keys;
     int m_prevTime;
