@@ -121,7 +121,7 @@ void GLWidget::tick()
         Vector3 p3;
         double x,y,z;
         double max=4096;
-        double G=1.0;
+        double G=0.75;
         if (solar){
             G=1.0;
         }
@@ -148,15 +148,15 @@ void GLWidget::tick()
                 i--;
                 size--;
             }
-//            else if(m_camera.dir.dot(p3-m_camera.eye)<0){
-//                if (pI==revolving){
-//                    revolving=NULL;
-//                }
-//                m_pms.remove_planet(i);
-//                planets.removeAt(i);
-//                i--;
-//                size--;
-//            }
+            else if(m_camera.dir.dot(p3-m_camera.eye)<0){
+                if (pI==revolving){
+                    revolving=NULL;
+                }
+                m_pms.remove_planet(i);
+                planets.removeAt(i);
+                i--;
+                size--;
+            }
             else{
                 //if (collide)
                 for (int j=0;j<i;j++){
@@ -176,11 +176,14 @@ void GLWidget::tick()
                     distance=difference.getMagnitude();
                     distance2=difference.getMagnitude2();
                     if (distance<=total){
+                        volume=(rI*rI*rI+rJ*rJ*rJ);
                         newR=pow(volume,1.0/3.0);
                         if (rI>=rJ){
-                            if (rJ>3){
-                                pI->set_radius(rI+1.0);
-                                pJ->set_radius(rJ-2.0);
+                            if (rJ>4){
+                                if (rI<=512){
+                                    pI->set_radius(rI+0.5);
+                                }
+                                pJ->set_radius(rJ-3.0);
                             }
                             else{
                                 if (pJ==revolving){
@@ -194,9 +197,11 @@ void GLWidget::tick()
                             }
                         }
                         else {
-                            if (rI>3){
-                                pJ->set_radius(rJ+1.0);
-                                 pI->set_radius(rI-2.0);
+                            if (rI>4){
+                                if (rJ<=512){
+                                    pJ->set_radius(rJ+0.5);
+                                }
+                                 pI->set_radius(rI-3.0);
                             }
                             else{
                                 if (pI==revolving){
@@ -216,13 +221,16 @@ void GLWidget::tick()
                         accelerationJ=G*massI*fromJtoI/(120.0*distance2);
                         pJ->set_velocity(velocityJ+accelerationJ);
                         accelerationI=G*massJ*fromItoJ/(120.0*distance2);
-                        pI->set_velocity(velocityI+accelerationI);
+                        velocityI+=accelerationI;
+                        pI->set_velocity(velocityI);
                     }
-
                 }
             }
             pI->move();
         }
+
+
+
         int rando = rand();
         rando=rando%1000;
         int rm=10;

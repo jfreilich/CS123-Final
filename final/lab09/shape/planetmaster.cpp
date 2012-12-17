@@ -46,7 +46,7 @@ void PlanetMaster::create_solar_system(){
     Planet* earth=new Planet();
     mass=1.0;
     temp=earth;
-    s=16;
+    s=32;
     texture=10;
     p=Vector4(512.0,0.0,0.0,1.0);
     v=Vector4(0.0,0.0,50.0,0.0);
@@ -69,7 +69,7 @@ void PlanetMaster::create_solar_system(){
     s=96;
     texture=14;
     p=Vector4(-1024.0,0.0,0.0,1.0);
-    v=Vector4(0.0,0.0,-2.0,0.0);
+    v=Vector4(0.0,0.0,-30.0,0.0);
     temp->set_velocity(v);
     temp->set_scale(getScaleMat(Vector4(s,s,s,1)));
     temp->set_radius(s);

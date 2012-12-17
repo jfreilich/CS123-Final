@@ -6,11 +6,11 @@ stochastic::stochastic()
 
 Vector4 stochastic::position(random_vals_t * rv, Vector3 cam_pos){
     int x=rand();
-    x=x%4096;
-    x=x-2048;
+    x=x%3000;
+    x=x-1500;
     int y=rand();
-    y=y%4096;
-    y=y-2048;
+    y=y%3000;
+    y=y-1500;
 //    y=rand()%1500;
   // x=rand()%1500;
     int z=rand()%128;
@@ -28,8 +28,8 @@ Vector4 stochastic::velocity(random_vals_t * rv){
     y=y%64;
     y-=32;
     int z=rand();
-    z=z%192;
-    z-=192;
+    z=z%128;
+    z-=128;
     Vector4 p=Vector4(x, y, z,0);
     //rv->p=rv->p/25.0;
     return p;
