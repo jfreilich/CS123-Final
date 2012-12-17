@@ -20,6 +20,7 @@ struct OrbitCamera
 
     void mouseMove(const Vector2 &delta);
     void move(Vector2 direction, float delta);
+    Matrix4x4 getViewingTransformation();
 };
 
 #endif // CAMERA_H

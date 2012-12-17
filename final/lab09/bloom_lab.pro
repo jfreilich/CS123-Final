@@ -32,7 +32,9 @@ HEADERS += lab/glwidget.h \
     lib/CS123Common.h \
     math/stochastic.h \
     support/particleemitter.h \
-    support/common.h
+    support/common.h \
+    filter/gaussianblur.h \
+    lab/raytracer.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -51,7 +53,9 @@ SOURCES += \
     shape/sphere.cpp \
     math/CS123Matrix.cpp \
     math/stochastic.cpp \
-    support/particleemitter.cpp
+    support/particleemitter.cpp \
+    filter/gaussianblur.cpp \
+    lab/raytracer.cpp
 
 
 

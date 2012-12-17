@@ -15,7 +15,6 @@
 class QGLShaderProgram;
 class QGLFramebufferObject;
 
-
 class GLWidget : public QGLWidget
 {
     Q_OBJECT

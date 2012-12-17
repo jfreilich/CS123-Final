@@ -12,6 +12,8 @@
 #include "glm.h"
 #include "common.h"
 #include "CS123Algebra.h"
+#include "filter/gaussianblur.h"
+#include "raytracer.h"
 
 #include <sstream>
 using namespace std;
@@ -590,12 +592,9 @@ void GLWidget::paintGL()
     applyPerspectiveCamera(width, height);
     renderScene();
 
-
-
-
     m_framebufferObjects["fbo_0"]->release();
 
-    // Copy the rendered scene into framebuffer 1(m_textures[0]
+    // Copy the rendered scene into framebuffer 1
     m_framebufferObjects["fbo_0"]->blitFramebuffer(m_framebufferObjects["fbo_1"],
                                                    QRect(0, 0, width, height), m_framebufferObjects["fbo_0"],
                                                    QRect(0, 0, width, height), GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -604,9 +603,13 @@ void GLWidget::paintGL()
 
     applyOrthogonalCamera(width,height);
 
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_0"]->texture());
+    //renderBlur(width,height);
+
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
 
     renderTexturedQuad(width, height);
+
+    //m_shaderPrograms["blur"]->release();
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -625,7 +628,6 @@ void GLWidget::paintGL()
     // TODO: Step 1 - use the brightpass shader to render bright areas
     // only to fbo_2
 
-
 //    m_framebufferObjects["fbo_2"]->bind();
 //    m_shaderPrograms["brightpass"]->bind();
 
@@ -633,8 +635,7 @@ void GLWidget::paintGL()
 
 //    renderTexturedQuad(width,height);
 
-//    m_shaderPrograms["brightpass"]->release();
-
+//
 //    glBindTexture(GL_TEXTURE_2D, 0);
 
 //    m_framebufferObjects["fbo_2"]->release();
@@ -689,13 +690,6 @@ void GLWidget::renderScene()
     // Enable culling (back) faces for rendering the dragon
     glEnable(GL_CULL_FACE);
 
-    // Render the dragon with the refraction shader bound
-
-    // glPushMatrix();
-    // glTranslatef(-1.25f, 0.f, 0.f);
-    //glCallList(m_dragon.idx);
-
-
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
 
     glDisable(GL_TEXTURE_CUBE_MAP);
@@ -720,24 +714,6 @@ void GLWidget::renderScene()
         Matrix4x4 tot=planet->get_total_trans();
         tot=tot.getTranspose();
         glMultMatrixd(tot.data);
-
-        /*particles*/
-        //glDisable(GL_DEPTH);
-        //glEnable(GL_BLEND);
-
-        //planet->emitter->updateParticles();       //Move the particles
-        //planet->emitter->drawParticles(planet->getTrans());         //Draw the particles
-
-        //glAccum(GL_MULT, .9f);
-
-        //glAccum(GL_ACCUM, 0.1f);
-//
- //       glAccum(GL_RETURN, 1.0f);
-
-   //     glFlush();
-        /*particles*/
-
-
 
 
         glEnable(GL_TEXTURE_2D);
@@ -784,8 +760,8 @@ void GLWidget::renderScene()
 }
 
 /**
-  Run a gaussian blur on the texture stored in fbo 2 and
-  put the result in fbo 1.  The blur should have a radius of 2.
+  Run a gaussian blur on the texture stored in fbo 1 and
+  put the result in fbo 2.  The blur should have a radius of 2.
 
   @param width: the viewport width
   @param height: the viewport height
@@ -825,7 +801,6 @@ void GLWidget::renderBlur(int width, int height, Planet *p, int n)
         glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
     }
-
 }
 
 /**
@@ -854,6 +829,9 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
     m_prevMousePos.x = event->x();
     m_prevMousePos.y = event->y();
+
+    //RayTracer::generateRayD(event->x(),event->y(),this->width(),this->height(),m_camera.eye,
+    //                        m_camera.getViewingTransformation());
 }
 
 /**
@@ -991,6 +969,10 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_Period) {
         QImage qi = grabFrameBuffer(false);
+
+        GaussianBlur gf = GaussianBlur(10);
+        qi = gf.filter(qi);
+
         QString filter;
         QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"), "", tr("PNG Image (*.png)"), &filter);
         if (fileName.size() > 0)
