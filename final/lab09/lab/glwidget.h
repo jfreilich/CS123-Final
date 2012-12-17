@@ -14,7 +14,7 @@
 class QGLShaderProgram;
 class QGLFramebufferObject;
 
-#define SKYBOX_RADIUS 768
+#define SKYBOX_RADIUS 1768
 
 class GLWidget : public QGLWidget
 {
