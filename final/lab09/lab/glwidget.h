@@ -1,6 +1,7 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#define SKYBOX_RADIUS 4096
 #include <QGLWidget>
 #include <QHash>
 #include <QString>
@@ -14,7 +15,6 @@
 class QGLShaderProgram;
 class QGLFramebufferObject;
 
-#define SKYBOX_RADIUS 768
 
 class GLWidget : public QGLWidget
 {
@@ -72,6 +72,7 @@ private:
     Vector2 m_prevMousePos;
     OrbitCamera m_camera;
     bool pause;
+    bool solar;
     GLUquadric* m_glu_sphere;
 
     // Resources

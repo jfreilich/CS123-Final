@@ -69,7 +69,7 @@ GLuint ResourceLoader::loadSkybox()
 
     // Be glad we wrote this for you...ugh.
     glBegin(GL_QUADS);
-    float extent = SKYBOX_RADIUS;
+    float extent = 4096;
     glTexCoord3f( 1.0f, -1.0f, -1.0f); glVertex3f( extent, -extent, -extent);
     glTexCoord3f(-1.0f, -1.0f, -1.0f); glVertex3f(-extent, -extent, -extent);
     glTexCoord3f(-1.0f,  1.0f, -1.0f); glVertex3f(-extent,  extent, -extent);
