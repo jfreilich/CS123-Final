@@ -7,6 +7,8 @@
 class RayTracer
 {
 public:
+    RayTracer();
+
     struct Closest {
             double t;
             Planet *planet;
@@ -15,9 +17,9 @@ public:
             Vector4 intersect;
     };
 
-    static Vector4 generateRayD(double x, double y, int width, int height, Vector4 eye,  Matrix4x4 inv);
-    static double getTValue(Planet* o, Vector4 invP, Vector4 objectD, Vector4 &normal);
-    static RayTracer::Closest* performTrace(Vector4 towardsSurface, Vector4 pos,  QList<Planet*> planets);
+    Vector4 generateRayD(double x, double y, int width, int height, Vector4 eye,  Matrix4x4 inv);
+    double getTValue(Planet* o, Vector4 invP, Vector4 objectD, Vector4 &normal);
+    RayTracer::Closest* performTrace(Vector4 towardsSurface, Vector4 pos,  QList<Planet*> planets);
 
 };
 

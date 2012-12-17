@@ -15,6 +15,7 @@ public:
     void remove_planet(int i);
     void addPlanet(Vector3 cam_pos);
     QList<Planet*> getPlanets();
+    void create_solar_system();
 
 private:
     QList<Planet*> m_planets;

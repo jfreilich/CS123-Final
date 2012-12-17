@@ -1,7 +1,10 @@
 #include "raytracer.h"
 
+RayTracer::RayTracer() {
 
-static Vector4 RayTracer::generateRayD(double x, double y, int width, int height, Vector4 eye, Matrix4x4 m) {
+}
+
+Vector4 RayTracer::generateRayD(double x, double y, int width, int height, Vector4 eye, Matrix4x4 m) {
 
     Vector4 pFilm = Vector4(2.0*(x)/(1.0*width)-1, 1 - 2.0*(y)/(1.0*height), -1, 0);
 
@@ -10,7 +13,7 @@ static Vector4 RayTracer::generateRayD(double x, double y, int width, int height
     return d;
 }
 
-static double RayTracer::getTValue(Planet* o, Vector4 invP, Vector4 objectD, Vector4 &normal) {
+double RayTracer::getTValue(Planet* o, Vector4 invP, Vector4 objectD, Vector4 &normal) {
 
     double a, b, c, t = NULL, tempt = NULL;
     Vector4 plane;
@@ -34,7 +37,7 @@ static double RayTracer::getTValue(Planet* o, Vector4 invP, Vector4 objectD, Vec
     return (t == NULL) ? NULL : max(t,0.0);
 }
 
-static RayTracer::Closest* RayTracer::performTrace(Vector4 towardsSurface, Vector4 pos, QList<Planet*> planets) {
+RayTracer::Closest* RayTracer::performTrace(Vector4 towardsSurface, Vector4 pos, QList<Planet*> planets) {
 
     Closest *closest = new Closest();
     closest->t = 0;

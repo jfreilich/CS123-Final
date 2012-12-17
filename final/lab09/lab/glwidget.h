@@ -51,7 +51,7 @@ protected:
     void paintText();
     GLuint LoadTextureRAW( const char * filename, int wrap );
     GLuint loadTexture(const QString &filename);
-
+    void create_solar_system();
     void adjustSize();
 
     void handleKeys();

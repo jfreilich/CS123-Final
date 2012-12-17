@@ -37,7 +37,7 @@ void OrbitCamera::move(Vector2 direction, float delta)
 
 Matrix4x4 OrbitCamera::getViewingTransformation() {
 
-    Matrix4x4 M2 = Matrix4x4(cotan(getWidthAngle()/2.0)/m_far,0,0,0,
+    /*Matrix4x4 M2 = Matrix4x4(cotan(getWidthAngle()/2.0)/m_far,0,0,0,
                              0,(cotan(m_heightAngle/2.0))/m_far,0,0,
                              0,0,1.0/m_far,0,
                              0,0,0,1);
@@ -57,6 +57,6 @@ Matrix4x4 OrbitCamera::getViewingTransformation() {
                              0,0,1,(-1.0)*m_position.z,
                              0,0,0,1);
 
-    return M4.getInverse()*M3.getInverse()*M2.getInverse();
+    return M4.getInverse()*M3.getInverse()*M2.getInverse();*/
 
 }

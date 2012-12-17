@@ -98,12 +98,13 @@ void GLWidget::tick()
 
         QList<Planet*> planets = m_pms.getPlanets();
         int size = planets.size();
+        cout << size << endl;
         Planet *pI, *pJ;
         Vector4 positionI,positionJ,difference,accelerationJ,accelerationI, fromItoJ, fromJtoI, velocityI, velocityJ;
         double x,y,z;
         double max=2048;
         //double C=4.0*M_PI/3.0;
-        double G=0.05;
+        double G=0.0003;
         double massI, massJ;
         double rI, rJ, distance,total, newR, volume,distance2;
         for (int i=0;i<size;i++) {
@@ -202,7 +203,7 @@ void GLWidget::tick()
         int rando = rand();
         rando=rando%1000;
         if (rando<=50){
-            m_pms.addPlanet(m_camera.eye);
+        //    m_pms.addPlanet(m_camera.eye);
         }
     }
 }
@@ -219,6 +220,17 @@ void GLWidget::handleKeys() {
         m_camera.move(Vector2(1,0),10);
 }
 
+void GLWidget::create_solar_system(){
+    QList<Planet*> planets = m_pms.getPlanets();
+    int size = planets.size();
+    for (int i=0;i<size;i++){
+        m_pms.remove_planet(i);
+        planets.removeAt(i);
+        i--;
+        size--;
+    }
+    m_pms.create_solar_system();
+}
 
 GLuint GLWidget::loadTexture(const QString &filename)
 {
@@ -558,7 +570,7 @@ void GLWidget::applyPerspectiveCamera(float width, float height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(m_camera.fovy, ratio, 0.01f, 4096.f);
+    gluPerspective(m_camera.fovy, ratio, 0.1f, 4096.f);
 
     gluLookAt(m_camera.eye.x, m_camera.eye.y, m_camera.eye.z,
               m_camera.eye.x + m_camera.dir.x, m_camera.eye.y + m_camera.dir.y, m_camera.eye.z + m_camera.dir.z,
@@ -691,7 +703,6 @@ void GLWidget::renderScene()
     glDisable(GL_TEXTURE_CUBE_MAP);
     //glEnable(GL_DEPTH_TEST);
     //glClear(GL_DEPTH_BUFFER_BIT);
-
     glEnable(GL_TEXTURE_2D);
 
     QList<Planet*> planets = m_pms.getPlanets();
@@ -822,8 +833,8 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     m_prevMousePos.x = event->x();
     m_prevMousePos.y = event->y();
 
-    RayTracer::generateRayD(event->x(),event->y(),this->width(),this->height(),m_camera.eye,
-                            m_camera.getViewingTransformation());
+    //RayTracer::generateRayD(event->x(),event->y(),this->width(),this->height(),m_camera.eye,
+    //                        m_camera.getViewingTransformation());
 }
 
 /**
@@ -938,7 +949,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_L) {
-        // anything for key L here
+        this->create_solar_system();
         return;
     }
     if (event->key() == Qt::Key_Period) {
